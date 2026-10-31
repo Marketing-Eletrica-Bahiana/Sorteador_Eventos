@@ -31,14 +31,18 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
 3. (Feita) Eventos e visão geral (`#/eventos`): indicadores, filtro, busca, cartões; criar,
    editar, duplicar e excluir (só admin). Telas do evento (`#/evento/:id` e
    `#/evento/:id/painel`) ainda provisórias, só com o resumo (ver "Eventos").
-4. Participantes e brindes (tela do sorteio, painel lateral): colar, importar, buscar, remover,
-   apagar a lista; brindes com quantidade.
+4. (Feita) Participantes e brindes (tela do sorteio, painel lateral com abas Participantes,
+   Brindes, Sorteados e Evento): colar, importar, buscar, remover, apagar a lista; brindes com
+   quantidade, ordem e edição (ver "Participantes e brindes").
 5. Palco e sorteio: sorteio justo, animação, confete, som, modo Apresentar, desfazer, recomeçar,
    encerrar e reabrir; quem acompanha vê ao vivo.
 6. Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação.
 7. Planilha (.xlsx) e encerramento.
 8. Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas que
    redesenham sem parar.
+
+Em 31/10/2026, depois de aprovar as Fases 1 a 3, a pessoa autorizou fazer as Fases 4 a 8 em
+sequência, sem pedir aprovação entre elas, mantendo teste, commit e publicação ao fim de cada uma.
 
 ## Tecnologia
 
@@ -268,9 +272,36 @@ um evento), `src/dados/eventos.js` e `src/lib/eventos.js` (cálculos, com testes
 - Excluir só para admin, com confirmação que mostra quantos participantes e sorteados somem.
 - Telas do evento ficam fora do menu, abertas para todos os papéis; o menu continua marcando
   Eventos. Evento inexistente mostra "Evento não encontrado.".
-- Depois de criar um evento a tela continua na visão geral. Quando a tela do sorteio estiver
-  pronta (Fase 4), avaliar abrir o evento criado direto.
+- Depois de criar ou duplicar um evento, a tela do sorteio dele abre direto (desde a Fase 4).
 - Formulários: mexer num campo apaga o aviso vermelho dele.
+
+## Participantes e brindes (definido na Fase 4)
+
+Tela do sorteio em `src/telas/evento/Sorteio.jsx`, com o painel lateral nas abas
+`AbaParticipantes`, `AbaBrindes`, `AbaSorteados` e `AbaEvento`. Gravação em
+`src/dados/acoesDoEvento.js` (sempre por `alterarEvento`); regras em `src/lib/participantes.js`,
+`src/lib/brindes.js` e `src/lib/planilha.js`, com testes.
+
+- Participantes `{id, nome}`. IDs `p1`, `p2`... continuando do maior que existe. Nome sem espaços
+  sobrando, até 120 letras. Repetido é achado sem diferenciar acentos, maiúsculas e pontuação.
+  Limite de 2.000 por evento; o que passa do limite fica de fora e o aviso diz quantos.
+- Colar: um nome por linha. Importar: `.txt` (um por linha), `.csv` (separador `;` ou `,`) ou
+  `.xlsx` (ExcelJS, carregado só na hora). A coluna é achada pelo cabeçalho "Nome", "Nomes",
+  "Participante", "Participantes", "Nome completo" ou "Nome do participante", nas 10 primeiras
+  linhas; sem cabeçalho, vale uma tabela de uma coluna só. `.txt` e `.csv` em ANSI do Windows
+  (windows-1252) também são lidos. `.xls` antigo pede para salvar como `.xlsx`.
+- Quem já foi sorteado nunca sai da lista. "Apagar a lista" tira só quem ainda não foi sorteado.
+- A lista mostra até 300 nomes; a busca acha os outros.
+- Brindes `{nome, qtd}` (`qtd` null = sem limite), nome único sem diferenciar acentos e
+  maiúsculas, até 80 letras. Entregues = sorteados com aquele brinde. A quantidade não pode ficar
+  menor que o já entregue. Brinde já entregue não sai da lista (só muda a quantidade).
+- A ordem dos brindes (setas na aba Brindes) vale para as teclas 1 a 9 do palco.
+- Renomear um brinde leva junto os sorteados e o brinde da vez. Se a quantidade nova esgotar o
+  brinde da vez, ele sai da vez (`brindeAtual: null`).
+- Evento encerrado não muda participantes, brindes nem sorteados (`garantirAberto`); o painel
+  avisa para reabrir. Os dados do evento (nome, data, descrição) continuam editáveis.
+- Quem só acompanha vê as quatro abas sem formulários nem botões de mudança.
+- Sem mascotes na tela do sorteio, nem no painel lateral.
 
 ## O que o sorteador faz
 

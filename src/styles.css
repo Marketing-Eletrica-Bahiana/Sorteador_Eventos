@@ -1478,6 +1478,247 @@ p {
   border: 1px solid var(--medio-20);
 }
 
+/* Tela do sorteio: palco e painel lateral */
+
+.sorteio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  gap: 24px;
+  align-items: start;
+}
+
+.palco {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 560px;
+  padding: 32px;
+  overflow: hidden;
+  border-radius: var(--raio-janela);
+  background: var(--gradiente-principal);
+  color: var(--branco);
+  box-shadow: var(--sombra-janela);
+}
+
+.palco::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--pattern, none);
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: auto 100%;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.palco__titulo {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  color: var(--branco);
+  overflow-wrap: anywhere;
+}
+
+.palco__aviso {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.palco__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  margin-top: auto;
+}
+
+.palco__numeros div {
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 16px;
+  border-radius: var(--raio);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+.palco__numeros dt {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.palco__numeros dd {
+  margin: 0;
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.painel-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--branco);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra-cartao);
+}
+
+.abas--painel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+}
+
+.abas--painel .abas__item {
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.abas--painel .abas__item.ativo {
+  border-bottom-color: var(--brilhante);
+}
+
+.aba-painel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.aba-painel__resumo {
+  color: var(--marinho);
+}
+
+.acoes--inicio {
+  justify-content: flex-start;
+}
+
+.botao--perigo-claro {
+  align-self: flex-start;
+  color: var(--vermelho);
+  border-color: var(--vermelho);
+}
+
+.lista-painel {
+  display: flex;
+  flex-direction: column;
+  max-height: 480px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.lista-painel__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 8px;
+  border-radius: var(--raio-etiqueta);
+}
+
+.lista-painel__item:nth-child(even) {
+  background: var(--medio-10);
+}
+
+.lista-painel__item.esgotado .lista-painel__nome {
+  text-decoration: line-through;
+}
+
+.lista-painel__ordem {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 4px;
+  border-radius: var(--raio-pilula);
+  background: var(--marinho);
+  color: var(--branco);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.lista-painel__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lista-painel__nome {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.form-brinde {
+  padding: 16px;
+  border-radius: var(--raio);
+  background: var(--medio-5);
+  border: 1px solid var(--medio-20);
+}
+
+.form-brinde > .botao {
+  align-self: flex-start;
+}
+
+.form-brinde__campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 8px;
+}
+
+.ficha--coluna {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ficha .ficha__texto {
+  font-weight: 400;
+  color: var(--preto);
+  white-space: pre-line;
+}
+
+@media (max-width: 1024px) {
+  .sorteio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .palco {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 760px) {
+  .palco {
+    padding: 24px 16px;
+  }
+
+  .palco__numeros {
+    gap: 8px;
+  }
+
+  .palco__numeros div {
+    padding: 8px;
+  }
+}
+
 /* Barra de progresso (sorteados do evento, estoque dos brindes) */
 
 .barra-progresso {

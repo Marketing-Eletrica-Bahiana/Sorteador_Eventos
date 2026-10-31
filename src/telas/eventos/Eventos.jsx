@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Plus, Search, Ticket } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { useAcesso } from '../../acesso/ProvedorAcesso.jsx'
 import { useAvisos } from '../../componentes/Avisos.jsx'
 import CarregandoBloco from '../../componentes/CarregandoBloco.jsx'
@@ -24,18 +25,26 @@ export default function Eventos() {
   const [filtro, setFiltro] = useState('todos')
   const [busca, setBusca] = useState('')
   const [edicao, setEdicao] = useState(null)
+  const navegar = useNavigate()
   const organiza = podeOrganizar(pessoa.papel)
   const exclui = podeExcluirEvento(pessoa.papel)
 
   const totais = useMemo(() => indicadoresGerais(eventos.dados ?? []), [eventos.dados])
   const visiveis = useMemo(() => filtrarEventos(eventos.dados ?? [], filtro, busca), [eventos.dados, filtro, busca])
 
-  function salvar(campos) {
+  async function salvar(campos) {
     if (edicao.modo === 'editar') return executar(() => editarEvento(edicao.evento.id, campos), 'Evento atualizado.')
-    if (edicao.modo === 'duplicar') {
-      return executar(() => criarEvento(campos, pessoa, edicao.evento), `"${campos.titulo.trim()}" criado a partir da cópia.`)
-    }
-    return executar(() => criarEvento(campos, pessoa), 'Evento criado! Bora preparar o sorteio.')
+    // Evento novo ou cópia: abre direto a tela dele para preparar participantes e brindes.
+    const base = edicao.modo === 'duplicar' ? edicao.evento : null
+    let novoId = null
+    const deuCerto = await executar(
+      async () => {
+        novoId = await criarEvento(campos, pessoa, base)
+      },
+      base ? `"${campos.titulo.trim()}" criado a partir da cópia.` : 'Evento criado! Bora preparar o sorteio.',
+    )
+    if (deuCerto) navegar(`/evento/${novoId}`)
+    return deuCerto
   }
 
   async function excluir(evento) {
