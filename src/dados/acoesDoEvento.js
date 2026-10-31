@@ -3,6 +3,15 @@
 import { alterarEvento } from '../dados/eventos.js'
 import { escolherBrindeDaVez, moverBrinde, removerBrinde, salvarBrinde } from '../lib/brindes.js'
 import { apagarNaoSorteados, garantirAberto, juntarParticipantes, removerParticipante } from '../lib/participantes.js'
+import {
+  desfazerUltimaRodada,
+  encerrar,
+  mudarPorVez,
+  reabrir,
+  recomecar,
+  sortear,
+  trocarBrinde,
+} from '../lib/sorteio.js'
 
 // Devolve { adicionados, repetidos, foraDoLimite } da tentativa que foi gravada.
 export async function adicionarParticipantes(id, nomes) {
@@ -27,3 +36,28 @@ export const tirarBrinde = (id, nome) => alterarEvento(id, (evento) => removerBr
 export const mudarOrdemDoBrinde = (id, nome, direcao) => alterarEvento(id, (evento) => moverBrinde(evento, nome, direcao))
 
 export const definirBrindeDaVez = (id, nome) => alterarEvento(id, (evento) => escolherBrindeDaVez(evento, nome))
+
+// Sorteia a próxima rodada e devolve quem saiu (da tentativa que foi gravada). Quem está no palco
+// vê o resultado pela atualização do evento, igual a quem só acompanha.
+export async function sortearRodada(id, porEmail) {
+  let novos = []
+  await alterarEvento(id, (evento) => {
+    const resultado = sortear(evento, { porEmail })
+    novos = resultado.novos
+    return resultado.mudancas
+  })
+  return novos
+}
+
+export const desfazerRodada = (id) => alterarEvento(id, desfazerUltimaRodada)
+
+export const recomecarSorteio = (id) => alterarEvento(id, recomecar)
+
+export const trocarBrindeDoSorteado = (id, idSorteado, brinde) =>
+  alterarEvento(id, (evento) => trocarBrinde(evento, idSorteado, brinde))
+
+export const definirPorVez = (id, quantidade) => alterarEvento(id, (evento) => mudarPorVez(evento, quantidade))
+
+export const encerrarEvento = (id) => alterarEvento(id, (evento) => encerrar(evento, new Date()))
+
+export const reabrirEvento = (id) => alterarEvento(id, reabrir)

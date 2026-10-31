@@ -34,8 +34,8 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
 4. (Feita) Participantes e brindes (tela do sorteio, painel lateral com abas Participantes,
    Brindes, Sorteados e Evento): colar, importar, buscar, remover, apagar a lista; brindes com
    quantidade, ordem e edição (ver "Participantes e brindes").
-5. Palco e sorteio: sorteio justo, animação, confete, som, modo Apresentar, desfazer, recomeçar,
-   encerrar e reabrir; quem acompanha vê ao vivo.
+5. (Feita) Palco e sorteio: sorteio justo, animação, confete, som, modo Apresentar, desfazer,
+   recomeçar, encerrar e reabrir; quem acompanha vê ao vivo (ver "Palco e sorteio").
 6. Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação.
 7. Planilha (.xlsx) e encerramento.
 8. Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas que
@@ -302,6 +302,45 @@ Tela do sorteio em `src/telas/evento/Sorteio.jsx`, com o painel lateral nas abas
   avisa para reabrir. Os dados do evento (nome, data, descrição) continuam editáveis.
 - Quem só acompanha vê as quatro abas sem formulários nem botões de mudança.
 - Sem mascotes na tela do sorteio, nem no painel lateral.
+
+## Palco e sorteio (definido na Fase 5)
+
+Palco em `src/telas/evento/Palco.jsx`; regras em `src/lib/sorteio.js` (com testes); animação em
+`src/hooks/useRevelacao.js`; som em `src/hooks/useSom.js`; tela cheia em
+`src/hooks/useApresentacao.js`; confete em `src/componentes/Confete.jsx`.
+
+- Sorteio justo: `inteiroAleatorio` usa `crypto.getRandomValues` e descarta os valores do fim do
+  intervalo de 32 bits que causariam viés; `escolherPosicoes` é um Fisher-Yates parcial. Roda
+  dentro da transação (`sortearRodada`): se outra pessoa sorteou ao mesmo tempo, refaz com a
+  lista nova, então ninguém sai duas vezes.
+- Cada clique em Sortear é uma rodada (`rodada` = última + 1) com `porVez` pessoas (1 a 50),
+  limitado a quem está na disputa e ao estoque do brinde da vez. `sorteados[].em` é a hora do
+  computador de quem sorteou (o `serverTimestamp` não funciona dentro de listas).
+- Sem brindes cadastrados, o sorteio só mostra nomes (`brinde: null`). Com brindes, precisa de
+  um brinde da vez com estoque; o que acaba sai da vez e das opções (`brindeAtual: null`).
+- Animação igual para todos: a rodada nova chega pela atualização do evento, os nomes giram por
+  3,2 s e o resultado aparece. Quem clicou começa a girar na hora e revela no mesmo tempo de quem
+  assiste de longe. Durante o giro, números e estoque ainda não contam a rodada nova.
+- Ao abrir a tela, a última rodada aparece parada, sem festa. Desfazer ou recomeçar volta a
+  mostrar a rodada anterior, também sem festa.
+- Uma pessoa: placa grande. Várias: grade, entrando uma a uma (350 ms de diferença). Brilho na
+  placa e confete só com as cores da paleta.
+- Som (Web Audio): tique a cada nome que passa e fanfarra na revelação. Botão para ligar e
+  desligar, guardado no navegador (`localStorage`, chave `sorteador:som`). O navegador só libera
+  o som depois do primeiro toque ou tecla na página.
+- `prefers-reduced-motion`: sem nomes girando (mostra "Sorteando..." por 0,9 s) e sem confete.
+- Teclas, só para quem pode sortear e fora de campos de texto e janelas: barra de espaço sorteia;
+  1 a 9 escolhem os nove primeiros brindes disponíveis, na ordem da aba Brindes.
+- Modo Apresentar (todos os papéis, inclusive quem acompanha, para a TV): palco na tela inteira,
+  sem painel lateral, com o logo; tenta tela cheia do navegador e Wake Lock (tela sempre acesa,
+  pedida de novo quando a aba volta a aparecer). Sem tela cheia (iPhone), o palco ocupa a janela.
+  Esc ou "Sair" voltam.
+- Desfazer o último sorteio tira a rodada inteira (pessoas voltam para a disputa, brindes para o
+  estoque), com confirmação mostrando os nomes. Recomeçar apaga todos os sorteados (mantém
+  participantes e brindes), com confirmação.
+- Encerrar (`status: "encerrado"`, `encerradoEm`) e reabrir ficam na aba Evento. Encerrado, o
+  palco mostra a etiqueta "Encerrado" e esconde os controles.
+- Aba Sorteados: quem organiza troca o brinde de alguém por outro com estoque, ou "Sem brinde".
 
 ## O que o sorteador faz
 

@@ -4,13 +4,14 @@ import { Link, useParams } from 'react-router'
 import { useAcesso } from '../../acesso/ProvedorAcesso.jsx'
 import CarregandoBloco from '../../componentes/CarregandoBloco.jsx'
 import { useEvento } from '../../dados/eventos.js'
+import { useApresentacao } from '../../hooks/useApresentacao.js'
 import { mensagemDeErro } from '../../lib/erros.js'
-import { numerosDoEvento } from '../../lib/eventos.js'
 import { podeOrganizar } from '../../lib/papeis.js'
 import AbaBrindes from './AbaBrindes.jsx'
 import AbaEvento from './AbaEvento.jsx'
 import AbaParticipantes from './AbaParticipantes.jsx'
 import AbaSorteados from './AbaSorteados.jsx'
+import Palco from './Palco.jsx'
 
 const ABAS = [
   { id: 'participantes', rotulo: 'Participantes', Icone: Users },
@@ -25,7 +26,9 @@ export default function Sorteio() {
   const { pessoa } = useAcesso()
   const { dados: evento, carregando, erro } = useEvento(id)
   const [aba, setAba] = useState('participantes')
+  const apresentacao = useApresentacao()
   const organiza = podeOrganizar(pessoa.papel)
+  const podeMexer = organiza && evento?.status === 'aberto'
 
   return (
     <section className="pagina">
@@ -37,9 +40,9 @@ export default function Sorteio() {
       {erro && <p className="aviso aviso--erro">{mensagemDeErro(erro)}</p>}
       {!carregando && !erro && !evento && <p className="aviso aviso--erro">Evento não encontrado. Ele pode ter sido excluído.</p>}
       {evento && (
-        <div className="sorteio">
-          <PalcoProvisorio evento={evento} />
-          <aside className="painel-lateral" aria-label="Painel do evento">
+        <div className={`sorteio ${apresentacao.ativo ? 'sorteio--apresentando' : ''}`}>
+          <Palco key={evento.id} evento={evento} podeSortear={podeMexer} apresentacao={apresentacao} />
+          <aside className="painel-lateral" aria-label="Painel do evento" hidden={apresentacao.ativo}>
             <div className="abas abas--painel" role="tablist">
               {ABAS.map(({ id: idAba, rotulo, Icone }) => (
                 <button
@@ -58,38 +61,13 @@ export default function Sorteio() {
             {evento.status === 'encerrado' && organiza && aba !== 'evento' && (
               <p className="aviso">Evento encerrado. Para mudar participantes, brindes ou sorteados, reabra o evento.</p>
             )}
-            {aba === 'participantes' && <AbaParticipantes evento={evento} podeMexer={organiza && evento.status === 'aberto'} />}
-            {aba === 'brindes' && <AbaBrindes evento={evento} podeMexer={organiza && evento.status === 'aberto'} />}
-            {aba === 'sorteados' && <AbaSorteados evento={evento} />}
+            {aba === 'participantes' && <AbaParticipantes evento={evento} podeMexer={podeMexer} />}
+            {aba === 'brindes' && <AbaBrindes evento={evento} podeMexer={podeMexer} />}
+            {aba === 'sorteados' && <AbaSorteados evento={evento} podeMexer={podeMexer} />}
             {aba === 'evento' && <AbaEvento evento={evento} podeOrganizar={organiza} />}
           </aside>
         </div>
       )}
     </section>
-  )
-}
-
-// Provisório: o palco do sorteio chega na Fase 5. Sem mascotes no palco.
-function PalcoProvisorio({ evento }) {
-  const n = numerosDoEvento(evento)
-  return (
-    <div className="palco">
-      <h1 className="palco__titulo">{evento.titulo}</h1>
-      <p className="palco__aviso">O palco do sorteio chega na próxima fase.</p>
-      <dl className="palco__numeros">
-        <div>
-          <dt>Na disputa</dt>
-          <dd>{n.naDisputa}</dd>
-        </div>
-        <div>
-          <dt>Sorteados</dt>
-          <dd>{n.sorteados}</dd>
-        </div>
-        <div>
-          <dt>Participantes</dt>
-          <dd>{n.participantes}</dd>
-        </div>
-      </dl>
-    </div>
   )
 }

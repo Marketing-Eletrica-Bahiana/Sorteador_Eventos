@@ -1035,7 +1035,7 @@ p {
   position: fixed;
   left: 50%;
   bottom: 24px;
-  z-index: 50;
+  z-index: 70; /* acima do palco no modo Apresentar */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1558,6 +1558,398 @@ p {
   font-size: clamp(2rem, 4vw, 3.25rem);
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+}
+
+.palco__topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.palco__evento {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.palco__data {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.palco__botoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.botao-icone--claro {
+  color: var(--branco);
+  border-color: var(--branco-40);
+}
+
+.botao-icone--claro:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.etiqueta--claro {
+  background: var(--branco);
+  color: var(--marinho);
+}
+
+.palco__brinde-da-vez {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 8px 20px;
+  border-radius: var(--raio-pilula);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  font-size: clamp(1rem, 1.6vw, 1.375rem);
+}
+
+.palco__brinde-da-vez svg {
+  width: 22px;
+  height: 22px;
+}
+
+.palco__centro {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
+.placa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 980px;
+  min-height: 220px;
+  padding: 32px;
+  border-radius: var(--raio-janela);
+  background: var(--branco);
+  color: var(--marinho);
+  text-align: center;
+  box-shadow: var(--sombra-janela);
+}
+
+.placa__rotulo {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--medio);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.placa__nome {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5.5vw, 5rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.placa__chamada {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.placa__brinde {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(1.125rem, 2vw, 1.75rem);
+  font-weight: 700;
+  color: var(--brilhante);
+}
+
+.placa__brinde svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.placa--espera {
+  background: rgba(255, 255, 255, 0.10);
+  border: 2px dashed rgba(255, 255, 255, 0.40);
+  box-shadow: none;
+  color: var(--branco);
+}
+
+.placa--espera > svg {
+  width: 48px;
+  height: 48px;
+}
+
+.placa--espera .placa__brinde {
+  color: var(--branco);
+  font-size: 1rem;
+}
+
+.placa--girando .placa__nome {
+  color: var(--brilhante);
+}
+
+.placa--revelada {
+  animation: revelar 600ms ease-out both, brilhar 1.8s ease-in-out 600ms 2;
+}
+
+@keyframes revelar {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes brilhar {
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.35), 0 0 64px rgba(64, 105, 255, 0.95);
+  }
+}
+
+.placa--grade {
+  max-width: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.placa--grade .placa__rotulo {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.grade-sorteados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grade-sorteados__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: var(--raio);
+  background: var(--branco);
+  color: var(--marinho);
+  box-shadow: var(--sombra-janela);
+  animation: revelar 500ms ease-out both;
+}
+
+.grade-sorteados__item strong {
+  font-family: var(--fonte-destaque);
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.grade-sorteados__item span {
+  font-weight: 700;
+  color: var(--brilhante);
+}
+
+.palco__controles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.palco__brindes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brinde-opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 14px 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--raio-pilula);
+  background: transparent;
+  color: var(--branco);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transicao), transform var(--transicao);
+}
+
+.brinde-opcao:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.brinde-opcao.escolhido {
+  background: var(--branco);
+  color: var(--marinho);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+}
+
+.brinde-opcao:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.brinde-opcao kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: var(--raio-pilula);
+  background: rgba(255, 255, 255, 0.20);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.brinde-opcao.escolhido kbd {
+  background: var(--marinho);
+  color: var(--branco);
+}
+
+.brinde-opcao__resto {
+  font-size: 0.8125rem;
+  opacity: 0.8;
+}
+
+.palco__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contador__rotulo {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.contador__valor {
+  min-width: 32px;
+  font-family: var(--fonte-destaque);
+  font-size: 1.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.botao--sortear {
+  min-height: 56px;
+  padding: 12px 40px;
+  border: 2px solid var(--branco);
+  background: var(--brilhante);
+  color: var(--branco);
+  font-size: 1.375rem;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.35);
+}
+
+.botao--sortear svg {
+  width: 24px;
+  height: 24px;
+}
+
+.palco__motivo {
+  font-weight: 700;
+  color: var(--branco);
+}
+
+.palco__dica {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.confete {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Modo Apresentar: o palco ocupa a tela inteira, sem painel lateral */
+
+body.apresentando {
+  overflow: hidden;
+}
+
+.palco--apresentando {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 4vh 4vw;
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+.palco--apresentando .palco__titulo {
+  font-size: clamp(2rem, 4vw, 4rem);
+}
+
+.palco--apresentando .placa {
+  max-width: 1400px;
+  min-height: 32vh;
+}
+
+.palco--apresentando .placa__nome {
+  font-size: clamp(3rem, 8vw, 9rem);
+}
+
+.palco--apresentando .grade-sorteados__item strong {
+  font-size: clamp(1.5rem, 2.8vw, 3rem);
+}
+
+.painel-lateral[hidden] {
+  display: none;
+}
+
+.lista-painel__troca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.lista-painel__troca select {
+  min-height: 32px;
+  padding: 2px 8px;
+  border: 1px solid var(--medio);
+  border-radius: var(--raio-etiqueta);
+  background: var(--branco);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.aba-painel__perigo {
+  padding-top: 16px;
+  border-top: 1px solid var(--medio-20);
 }
 
 .painel-lateral {
