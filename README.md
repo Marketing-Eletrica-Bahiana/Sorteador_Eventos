@@ -5,6 +5,16 @@ dashboard ao vivo.
 
 Endereço: https://marketing-eletrica-bahiana.github.io/Sorteador_Eventos/
 
+## O que tem
+
+- Login com o Google, só para e-mails @eletricabahiana.com.br.
+- Visão geral dos eventos, com indicadores, filtro e busca.
+- Participantes colados ou importados (.txt, .csv, .xlsx) e brindes com quantidade.
+- Palco do sorteio para telão, com sorteio justo, animação, confete, som e modo Apresentar.
+- Dashboard do evento em tempo real, com modo para TV.
+- Planilha .xlsx com sorteados, brindes e participantes.
+- Tela Equipe para o admin cadastrar quem organiza.
+
 ## Rodar no computador
 
 Precisa do Node 24.
@@ -25,7 +35,6 @@ npm test
 ## Publicação
 
 Cada envio na branch `main` publica o site sozinho pelo GitHub Actions (aba **Actions** do
-repositório). Na primeira vez, em **Settings > Pages**, a opção **Source** precisa estar em
-**GitHub Actions**.
+repositório). Em **Settings > Pages**, a opção **Source** precisa estar em **GitHub Actions**.
 
 Regras do projeto, dados e identidade visual: [CLAUDE.md](CLAUDE.md).

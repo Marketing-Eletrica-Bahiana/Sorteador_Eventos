@@ -39,8 +39,8 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
 6. (Feita) Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação
    (ver "Dashboard").
 7. (Feita) Planilha (.xlsx) e encerramento (ver "Planilha").
-8. Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas que
-   redesenham sem parar.
+8. (Feita) Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas
+   que redesenham sem parar (ver "Revisão").
 
 Em 31/10/2026, depois de aprovar as Fases 1 a 3, a pessoa autorizou fazer as Fases 4 a 8 em
 sequência, sem pedir aprovação entre elas, mantendo teste, commit e publicação ao fim de cada uma.
@@ -454,11 +454,32 @@ Geração em `src/lib/excel.js` (com testes que leem o arquivo de volta); botão
   o primeiro campo, marcar o campo com `data-foco` (o `autoFocus` do React não funciona aí).
 - Campos de texto: os estilos de `.campo input` deixam de fora caixas de marcar e botões de opção.
 
+## Revisão (Fase 8)
+
+- Cores: só as 7 da paleta e transparências delas em todo o `src/` (CSS, confete e planilha).
+  Conferido por busca de `#...` e `rgba(...)`.
+- Fontes: só `EB Lato`, `Lato` e `Klavika` (com Lato Black de alternativa); a planilha usa Lato.
+- Datas em DD/MM/AAAA e horas em HH:MM, sempre por `src/lib/datas.js` (fuso America/Bahia);
+  nenhum campo de data do navegador.
+- Sem travessão nos textos.
+- Mascotes só no login e nas telas vazias de Eventos e Equipe; nunca no palco, no painel lateral
+  ou na dashboard. Logo só pelo componente `Logo`.
+- Permissões da interface iguais às regras: Equipe e excluir evento só admin; criar, editar,
+  sortear e mexer em participantes e brindes para organizador e admin com cadastro ativo; o resto
+  só leitura. Toda gravação de evento em transação (inclusive criar e excluir).
+- Celular: todas as telas sem rolagem lateral; tabelas viram cartões.
+- Telas que redesenham sem parar: conferido com um contador de mudanças na página parada (zero em
+  todas as telas) e sem "Maximum update depth exceeded" no console.
+
 ## Pendências
 
-- Arquivos da Klavika: colocar em `public/fontes/` quando chegarem (nomes acima).
+- Arquivos da Klavika: colocar em `public/fontes/` quando chegarem (nomes acima). Até lá o
+  console do navegador mostra um aviso de arquivo não encontrado, sem efeito na tela.
 - Regras do Firestore: `firestore.rules` foi escrito a partir da descrição das regras publicadas.
   Comparar com o texto do console e deixar os dois iguais.
+- A visão geral escuta a coleção `eventos` inteira, com as listas de participantes e sorteados de
+  cada evento. Com muitos eventos grandes, pode ficar pesada no celular; se acontecer, guardar um
+  resumo (números) num documento à parte para a visão geral.
 - Pasta `assets/` (enviada antes do projeto: fundo azul e vermelho, faixa de circuito, logo SVG
   branco, mascotes em .webp e ícone): não é usada pelo app. Falta decidir se fica ou sai. O fundo
   azul e vermelho mistura as duas cores e gera tons de roxo, fora da paleta.

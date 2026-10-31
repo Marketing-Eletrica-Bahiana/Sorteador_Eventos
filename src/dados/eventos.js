@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { collection, deleteDoc, doc, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { collection, doc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase.js'
 import { useConsulta } from '../hooks/useConsulta.js'
 import { camposDoEvento, novoEvento, ordenarEventos } from '../lib/eventos.js'
@@ -44,5 +44,11 @@ export function alterarEvento(id, alterar) {
 
 export const editarEvento = (id, campos) => alterarEvento(id, () => camposDoEvento(campos))
 
-// Só o admin (as regras recusam para os outros papéis).
-export const excluirEvento = (id) => deleteDoc(doc(db, 'eventos', id))
+// Só o admin (as regras recusam para os outros papéis). Também em transação, como toda alteração.
+export function excluirEvento(id) {
+  const referencia = doc(db, 'eventos', id)
+  return runTransaction(db, async (transacao) => {
+    if (!(await transacao.get(referencia)).exists()) throw new Error('Este evento não existe mais.')
+    transacao.delete(referencia)
+  })
+}

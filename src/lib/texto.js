@@ -8,6 +8,3 @@ export const normalizar = (texto) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
-
-// Pedaço de texto seguro para usar em IDs de documento.
-export const paraId = (texto) => normalizar(texto).replace(/\s+/g, '-')

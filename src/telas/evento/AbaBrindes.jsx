@@ -9,7 +9,7 @@ import { estoqueDosBrindes, validarBrinde } from '../../lib/brindes.js'
 
 const numero = (n) => n.toLocaleString('pt-BR')
 
-export function textoDoEstoque({ qtd, entregues, restantes }) {
+function textoDoEstoque({ qtd, entregues, restantes }) {
   if (qtd == null) return `Sem limite · entregues: ${numero(entregues)}`
   const sobra = restantes === 0 ? 'acabou' : `sobra${restantes === 1 ? '' : 'm'} ${numero(restantes)}`
   return `Entregues: ${numero(entregues)} de ${numero(qtd)} · ${sobra}`

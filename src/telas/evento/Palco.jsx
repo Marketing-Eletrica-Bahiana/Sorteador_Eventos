@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Gift, Maximize, Minimize, Minus, Plus, Sparkles, Undo2, Volume2, VolumeX } from 'lucide-react'
 import { useAcesso } from '../../acesso/ProvedorAcesso.jsx'
 import { useAvisos } from '../../componentes/Avisos.jsx'
@@ -242,23 +242,29 @@ export default function Palco({ evento, podeSortear, apresentacao }) {
 }
 
 // Nomes passando rápido e desacelerando. É só animação: quem ganha vem do sorteio justo.
+// A lista fica numa ref para a atualização do evento no meio do giro não recomeçar a velocidade.
 function NomesGirando({ nomes, reduzido, aoTrocar }) {
-  const sortearNome = useCallback(() => nomes[Math.floor(Math.random() * nomes.length)] ?? '', [nomes])
+  const lista = useRef(nomes)
+  const sortearNome = () => lista.current[Math.floor(Math.random() * lista.current.length)] ?? ''
   const [nome, setNome] = useState(sortearNome)
 
   useEffect(() => {
-    if (reduzido || nomes.length < 2) return undefined
+    lista.current = nomes
+  }, [nomes])
+
+  useEffect(() => {
+    if (reduzido) return undefined
     let atraso = 55
     let relogio
     const passo = () => {
-      setNome(sortearNome())
+      setNome(lista.current[Math.floor(Math.random() * lista.current.length)] ?? '')
       aoTrocar?.()
       atraso = Math.min(atraso * 1.07, 240)
       relogio = setTimeout(passo, atraso)
     }
     relogio = setTimeout(passo, atraso)
     return () => clearTimeout(relogio)
-  }, [nomes, reduzido, aoTrocar, sortearNome])
+  }, [reduzido, aoTrocar])
 
   return (
     <div className="placa placa--girando" role="status">

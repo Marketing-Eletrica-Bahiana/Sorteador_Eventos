@@ -29,35 +29,3 @@ export function useConsulta(chave, criarReferencia) {
 
   return estado
 }
-
-// Várias consultas de lista ao mesmo tempo, juntas numa lista só (sem repetir documentos).
-export function useConsultas(chave, criarReferencias) {
-  const [estado, setEstado] = useState({ dados: null, carregando: Boolean(chave), erro: null })
-
-  useEffect(() => {
-    if (!chave) {
-      setEstado({ dados: null, carregando: false, erro: null })
-      return undefined
-    }
-    setEstado((atual) => ({ ...atual, carregando: true, erro: null }))
-    const referencias = criarReferencias()
-    const partes = referencias.map(() => null)
-    const cancelar = referencias.map((referencia, i) =>
-      onSnapshot(
-        referencia,
-        (snap) => {
-          partes[i] = snap.docs.map(lerDocumento)
-          if (partes.every(Boolean)) {
-            const porId = new Map(partes.flat().map((d) => [d.id, d]))
-            setEstado({ dados: [...porId.values()], carregando: false, erro: null })
-          }
-        },
-        (erro) => setEstado({ dados: null, carregando: false, erro }),
-      ),
-    )
-    return () => cancelar.forEach((parar) => parar())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chave])
-
-  return estado
-}
