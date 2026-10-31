@@ -1,5 +1,5 @@
 import { LogOut } from 'lucide-react'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import { useAcesso } from '../acesso/ProvedorAcesso.jsx'
 import { PAPEIS } from '../lib/papeis.js'
 import { primeiroNome } from '../lib/texto.js'
@@ -8,6 +8,9 @@ import Logo from './Logo.jsx'
 
 export default function Layout({ telas, children }) {
   const { pessoa, sair } = useAcesso()
+  const { pathname } = useLocation()
+  // Dentro de um evento (#/evento/...), o menu continua marcando Eventos.
+  const ativo = (caminho, isActive) => isActive || (caminho === '/eventos' && pathname.startsWith('/evento/'))
 
   return (
     <div className="app">
@@ -27,7 +30,11 @@ export default function Layout({ telas, children }) {
         </div>
         <nav className="menu" aria-label="Telas">
           {telas.map(({ caminho, rotulo, Icone }) => (
-            <NavLink key={caminho} to={caminho} className={({ isActive }) => `menu__item ${isActive ? 'ativo' : ''}`}>
+            <NavLink
+              key={caminho}
+              to={caminho}
+              className={({ isActive }) => `menu__item ${ativo(caminho, isActive) ? 'ativo' : ''}`}
+            >
               <Icone aria-hidden="true" />
               {rotulo}
             </NavLink>

@@ -41,7 +41,11 @@ function Formulario({ edicao, emailsCadastrados, ehVoce, aoSalvar, aoFechar }) {
   const [erros, setErros] = useState({})
   const [salvando, setSalvando] = useState(false)
   const novo = edicao.modo === 'novo'
-  const mudar = (campo, valor) => setDados((atual) => ({ ...atual, [campo]: valor }))
+  // Mexer num campo apaga o aviso dele.
+  const mudar = (campo, valor) => {
+    setDados((atual) => ({ ...atual, [campo]: valor }))
+    setErros((atuais) => ({ ...atuais, [campo]: '' }))
+  }
 
   async function enviar(evento) {
     evento.preventDefault()

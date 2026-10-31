@@ -28,8 +28,9 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
    Equipe, regras em `firestore.rules` e publicação automática no GitHub Pages.
 2. (Feita) Equipe (`#/equipe`, só admin): cadastrar, editar nome, cargo e papel, ativar e
    desativar (ver "Equipe").
-3. Eventos e visão geral (`#/eventos`): indicadores, filtro, busca, cartões; criar, editar,
-   duplicar e excluir (só admin).
+3. (Feita) Eventos e visão geral (`#/eventos`): indicadores, filtro, busca, cartões; criar,
+   editar, duplicar e excluir (só admin). Telas do evento (`#/evento/:id` e
+   `#/evento/:id/painel`) ainda provisórias, só com o resumo (ver "Eventos").
 4. Participantes e brindes (tela do sorteio, painel lateral): colar, importar, buscar, remover,
    apagar a lista; brindes com quantidade.
 5. Palco e sorteio: sorteio justo, animação, confete, som, modo Apresentar, desfazer, recomeçar,
@@ -247,6 +248,30 @@ Código em `src/telas/equipe/`, `src/dados/membros.js` (leitura e gravação) e 
 - Cadastro com papel fora da lista aparece como "Papel inválido" em vermelho; ao editar, o
   formulário já abre com Organização escolhida.
 
+## Eventos (definido na Fase 3)
+
+Código em `src/telas/eventos/` (visão geral, cartão e formulário), `src/telas/evento/` (telas de
+um evento), `src/dados/eventos.js` e `src/lib/eventos.js` (cálculos, com testes).
+
+- Toda alteração de evento passa por `alterarEvento(id, alterar)` em `src/dados/eventos.js`: lê o
+  evento dentro de uma transação e grava só o que `alterar` devolve, mais `atualizadoEm`. As
+  próximas fases (participantes, brindes, sorteio) usam a mesma função.
+- Evento novo (`novoEvento`): `status: "aberto"`, listas vazias, `brindeAtual: null`, `porVez: 1`,
+  `encerradoEm: null`, `criadoEm` e `atualizadoEm` do servidor. Criado em transação.
+- Números de cada evento (`numerosDoEvento`): participantes, sorteados, na disputa (participantes
+  que ainda não saíram) e brindes entregues (sorteados com brinde). A barra de progresso é a parte
+  dos participantes que já saiu.
+- Visão geral: mais recentes primeiro pela data; no mesmo dia, por nome. Busca sem diferenciar
+  acentos e maiúsculas, no nome e na descrição, com cada palavra em qualquer ordem.
+- Duplicar abre o formulário com "(cópia)" no nome, a data de hoje e a mesma descrição. Vão junto
+  brindes, participantes e pessoas por sorteio; os sorteados não.
+- Excluir só para admin, com confirmação que mostra quantos participantes e sorteados somem.
+- Telas do evento ficam fora do menu, abertas para todos os papéis; o menu continua marcando
+  Eventos. Evento inexistente mostra "Evento não encontrado.".
+- Depois de criar um evento a tela continua na visão geral. Quando a tela do sorteio estiver
+  pronta (Fase 4), avaliar abrir o evento criado direto.
+- Formulários: mexer num campo apaga o aviso vermelho dele.
+
 ## O que o sorteador faz
 
 ### Eventos
@@ -315,9 +340,12 @@ Código em `src/telas/equipe/`, `src/dados/membros.js` (leitura e gravação) e 
   botão.
 - Para ver telas internas sem login, dá para subir o Vite com uma configuração de demonstração
   fora do repositório (em `.claude/`, que é ignorada), usando `resolve.alias` para trocar
-  `acesso/ProvedorAcesso.jsx` e os módulos de `dados/` (hoje `dados/membros.js`) por versões com
-  dados de mentira guardados só na memória do navegador. O papel vem da URL, antes do `#`
-  (`?papel=organizador`). Nunca gravar no Firestore real a partir dessa demonstração.
+  `acesso/ProvedorAcesso.jsx` e os módulos de `dados/` (hoje `membros.js` e `eventos.js`) por
+  versões com dados de mentira guardados só na memória do navegador. O papel vem da URL, antes do
+  `#` (`?papel=organizador`); `?vazio` começa sem eventos. Nunca gravar no Firestore real a partir
+  dessa demonstração.
+- Campo de data (`componentes/CampoData.jsx`): dentro de uma janela, o calendário abre no meio do
+  formulário (para não ser cortado) e o Esc fecha só o calendário.
 - Janelas (`componentes/Janela.jsx`): ao abrir, o navegador põe o foco no botão Fechar. Para focar
   o primeiro campo, marcar o campo com `data-foco` (o `autoFocus` do React não funciona aí).
 - Campos de texto: os estilos de `.campo input` deixam de fora caixas de marcar e botões de opção.

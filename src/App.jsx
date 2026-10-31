@@ -15,6 +15,18 @@ const TELAS = {
   '/equipe': lazy(() => import('./telas/equipe/Equipe.jsx')),
 }
 
+// Telas de um evento, fora do menu. Todo mundo que entra pode abrir (quem acompanha vê sem controles).
+const TELAS_DO_EVENTO = [
+  { caminho: '/evento/:id', Tela: lazy(() => import('./telas/evento/Sorteio.jsx')) },
+  { caminho: '/evento/:id/painel', Tela: lazy(() => import('./telas/evento/Dashboard.jsx')) },
+]
+
+const carregar = (Tela) => (
+  <Suspense fallback={<CarregandoBloco />}>
+    <Tela />
+  </Suspense>
+)
+
 function Rotas() {
   const { situacao, pessoa } = useAcesso()
 
@@ -26,20 +38,12 @@ function Rotas() {
   return (
     <Layout telas={telas}>
       <Routes>
-        {telas.map((tela) => {
-          const Tela = TELAS[tela.caminho]
-          return (
-            <Route
-              key={tela.caminho}
-              path={`${tela.caminho}/*`}
-              element={
-                <Suspense fallback={<CarregandoBloco />}>
-                  <Tela />
-                </Suspense>
-              }
-            />
-          )
-        })}
+        {telas.map((tela) => (
+          <Route key={tela.caminho} path={`${tela.caminho}/*`} element={carregar(TELAS[tela.caminho])} />
+        ))}
+        {TELAS_DO_EVENTO.map(({ caminho, Tela }) => (
+          <Route key={caminho} path={caminho} element={carregar(Tela)} />
+        ))}
         {/* Qualquer outro endereço, inclusive a entrada, leva à visão geral dos eventos. */}
         <Route path="*" element={<Navigate to={TELA_INICIAL} replace />} />
       </Routes>

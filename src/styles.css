@@ -697,6 +697,7 @@ p {
 
 .campo input:not([type='checkbox']):not([type='radio']),
 .campo select,
+.campo textarea,
 .tabela select {
   width: 100%;
   min-height: 40px;
@@ -709,8 +710,13 @@ p {
   transition: box-shadow var(--transicao), border-color var(--transicao);
 }
 
+.campo textarea {
+  resize: vertical;
+}
+
 .campo input:not([type='checkbox']):not([type='radio']):focus,
 .campo select:focus,
+.campo textarea:focus,
 .tabela select:focus {
   outline: none;
   border-color: var(--brilhante);
@@ -1119,6 +1125,359 @@ p {
   display: block;
 }
 
+/* Cabeçalho de página com botão ao lado do título */
+
+.pagina__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  color: var(--marinho);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.voltar svg {
+  width: 18px;
+  height: 18px;
+  color: var(--brilhante);
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+/* Cartões de indicadores: gradiente principal, números grandes em Klavika */
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.indicador {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px;
+  overflow: hidden;
+  border-radius: var(--raio);
+  background: var(--gradiente-principal);
+  color: var(--branco);
+  box-shadow: var(--sombra-cartao);
+  transition: transform var(--transicao);
+}
+
+.indicador:hover {
+  transform: translateY(-4px);
+}
+
+.indicador::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  bottom: 12px;
+  width: 48px;
+  height: 2px;
+  background: var(--branco);
+  opacity: 0.6;
+}
+
+.indicador__rotulo {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.indicador__valor {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.indicador__detalhe {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.indicadores--grandes .indicador__valor {
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+}
+
+/* Escolha entre poucas opções (filtro Todos, Abertos, Encerrados) */
+
+.segmentos {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid var(--medio);
+  border-radius: var(--raio-pilula);
+  background: var(--branco);
+  overflow: hidden;
+}
+
+.segmentos__opcao {
+  min-height: 40px;
+  padding: 8px 20px;
+  border: 0;
+  background: transparent;
+  color: var(--marinho);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.segmentos__opcao + .segmentos__opcao {
+  border-left: 1px solid var(--medio-20);
+}
+
+.segmentos__opcao:hover {
+  background: var(--medio-10);
+}
+
+.segmentos__opcao.escolhido {
+  background: var(--brilhante);
+  color: var(--branco);
+}
+
+/* Visão geral dos eventos */
+
+.grade-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.cartao-evento {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 4px solid var(--brilhante);
+}
+
+.cartao-evento:hover {
+  transform: translateY(-4px);
+}
+
+.cartao-evento--encerrado {
+  border-top-color: var(--marinho);
+}
+
+.cartao-evento__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cartao-evento__data {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--marinho);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartao-evento__data svg {
+  width: 18px;
+  height: 18px;
+  color: var(--medio);
+}
+
+.cartao-evento__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cartao-evento__titulo {
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: 1.375rem;
+  overflow-wrap: anywhere;
+}
+
+/* Descrição em até duas linhas */
+.cartao-evento__descricao {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--texto-suave);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cartao-evento__numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  margin-top: auto;
+}
+
+.cartao-evento__numeros div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+}
+
+.cartao-evento__numeros dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--medio);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cartao-evento__numeros dd {
+  margin: 0;
+  font-family: var(--fonte-destaque);
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--marinho);
+  font-variant-numeric: tabular-nums;
+}
+
+.cartao-evento__progresso {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cartao-evento__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--medio-20);
+}
+
+.cartao-evento__gestao {
+  margin-left: auto;
+}
+
+.etiqueta--aberto {
+  background: var(--brilhante);
+  color: var(--branco);
+}
+
+.etiqueta--encerrado {
+  background: var(--marinho);
+  color: var(--branco);
+}
+
+/* Campo de data com calendário (componentes/CampoData.jsx) */
+
+.campo-data {
+  position: relative;
+}
+
+.campo-data__linha {
+  display: flex;
+  gap: 8px;
+}
+
+.campo-data__linha input {
+  flex: 1;
+}
+
+.campo-data__botao {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-color: var(--medio);
+}
+
+.calendario {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 288px;
+  margin-top: 4px;
+  padding: 16px;
+  border-radius: var(--raio);
+  background: var(--branco);
+  box-shadow: var(--sombra-janela);
+}
+
+.calendario__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--marinho);
+}
+
+.calendario__grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.calendario__semana {
+  padding: 4px 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--medio);
+}
+
+.calendario__dia {
+  height: 32px;
+  border: 0;
+  border-radius: var(--raio-etiqueta);
+  background: transparent;
+  color: var(--preto);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.calendario__dia:hover {
+  background: var(--medio-10);
+}
+
+.calendario__dia.hoje {
+  box-shadow: inset 0 0 0 1px var(--brilhante);
+  font-weight: 700;
+}
+
+.calendario__dia.escolhido {
+  background: var(--brilhante);
+  color: var(--branco);
+  font-weight: 700;
+}
+
+.calendario__hoje {
+  align-self: flex-end;
+  min-height: 32px;
+  padding: 4px 12px;
+}
+
+/* Dentro de uma janela, o calendário abre no meio do formulário para não ser cortado pela borda */
+.janela-modal .calendario {
+  position: static;
+  margin-top: 8px;
+  box-shadow: var(--sombra-cartao);
+  border: 1px solid var(--medio-20);
+}
+
 /* Barra de progresso (sorteados do evento, estoque dos brindes) */
 
 .barra-progresso {
@@ -1234,6 +1593,42 @@ p {
 
   .papeis-resumo {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grade-eventos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .segmentos {
+    display: flex;
+  }
+
+  .segmentos__opcao {
+    flex: 1;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 960px) {
+  .indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 340px) {
+  .indicadores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .indicador {
+    padding: 16px;
+  }
+
+  .indicador::after {
+    left: 16px;
+    bottom: 8px;
   }
 }
 

@@ -3,6 +3,11 @@
 
 export const FUSO = 'America/Bahia'
 
+export const NOMES_MESES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+]
+
 const dois = (n) => String(n).padStart(2, '0')
 
 export function hojeISO(agora = new Date()) {
