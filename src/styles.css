@@ -695,7 +695,7 @@ p {
   color: var(--marinho);
 }
 
-.campo input:not([type='checkbox']),
+.campo input:not([type='checkbox']):not([type='radio']),
 .campo select,
 .tabela select {
   width: 100%;
@@ -709,7 +709,7 @@ p {
   transition: box-shadow var(--transicao), border-color var(--transicao);
 }
 
-.campo input:not([type='checkbox']):focus,
+.campo input:not([type='checkbox']):not([type='radio']):focus,
 .campo select:focus,
 .tabela select:focus {
   outline: none;
@@ -717,7 +717,7 @@ p {
   box-shadow: 0 0 0 3px rgba(0, 55, 255, 0.20);
 }
 
-.campo input:not([type='checkbox']):disabled,
+.campo input:not([type='checkbox']):not([type='radio']):disabled,
 .campo select:disabled {
   background: var(--medio-5);
   opacity: 0.8;
@@ -746,7 +746,7 @@ p {
   pointer-events: none;
 }
 
-.campo--busca input:not([type='checkbox']) {
+.campo--busca input:not([type='checkbox']):not([type='radio']) {
   padding-left: 40px;
 }
 
@@ -913,6 +913,7 @@ p {
   display: block;
   font-size: 0.8125rem;
   color: var(--texto-suave);
+  overflow-wrap: anywhere;
 }
 
 .tabela__acoes {
@@ -1079,6 +1080,45 @@ p {
   font-weight: 700;
 }
 
+/* Equipe */
+
+.papeis-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.papeis-resumo__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+.papeis-resumo__item > svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--brilhante);
+}
+
+.bloco__titulo .etiqueta {
+  font-family: var(--fonte);
+}
+
+.etiqueta--voce {
+  margin-left: 8px;
+  background: var(--brilhante);
+  color: var(--branco);
+}
+
+.opcao__ajuda {
+  display: block;
+}
+
 /* Barra de progresso (sorteados do evento, estoque dos brindes) */
 
 .barra-progresso {
@@ -1162,6 +1202,11 @@ p {
     display: none;
   }
 
+  /* Deixa e-mails longos quebrarem a linha dentro do cartão */
+  .tabela td > div {
+    min-width: 0;
+  }
+
   .tabela__acoes {
     justify-content: flex-end;
   }
@@ -1185,6 +1230,10 @@ p {
 
   .janela-modal__corpo {
     padding: 16px;
+  }
+
+  .papeis-resumo {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

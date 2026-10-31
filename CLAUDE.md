@@ -26,7 +26,8 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
 1. (Feita) Base: projeto Vite + React, marca e fontes em `public/`, estilos da identidade, login
    com Google (domínio e leitura do cadastro), menu por papel, telas provisórias de Eventos e
    Equipe, regras em `firestore.rules` e publicação automática no GitHub Pages.
-2. Equipe (`#/equipe`, só admin): cadastrar, editar nome, cargo e papel, ativar e desativar.
+2. (Feita) Equipe (`#/equipe`, só admin): cadastrar, editar nome, cargo e papel, ativar e
+   desativar (ver "Equipe").
 3. Eventos e visão geral (`#/eventos`): indicadores, filtro, busca, cartões; criar, editar,
    duplicar e excluir (só admin).
 4. Participantes e brindes (tela do sorteio, painel lateral): colar, importar, buscar, remover,
@@ -228,6 +229,24 @@ As regras publicadas dependem destes nomes. Texto das regras em `firestore.rules
 - Regras: `membros`, logado lê e admin grava; `eventos`, logado lê, organizador (ou admin) cria e
   atualiza, só admin exclui.
 
+## Equipe (definido na Fase 2)
+
+Código em `src/telas/equipe/`, `src/dados/membros.js` (leitura e gravação) e `src/lib/equipe.js`
+(validação, com testes).
+
+- O ID do documento é o e-mail em minúsculas e sem espaços; o e-mail não muda depois do cadastro.
+  Só entram e-mails `@eletricabahiana.com.br` (domínio em `src/lib/empresa.js`).
+- Grava só `nome`, `cargo`, `papel` e `ativo`. Cadastro novo em transação, para não sobrescrever
+  quem já existe; a tela também avisa "Essa pessoa já está cadastrada." antes de gravar.
+- Papéis que o admin escolhe: Organização (`organizador`) e Administração (`admin`).
+  Acompanhamento não se cadastra: é quem não tem cadastro ativo.
+- Desativar pede confirmação e não apaga nada: a pessoa continua entrando, mas só acompanha.
+  Ninguém é excluído da equipe.
+- O admin não muda o próprio papel nem desativa o próprio acesso (sempre sobra pelo menos um
+  admin ativo).
+- Cadastro com papel fora da lista aparece como "Papel inválido" em vermelho; ao editar, o
+  formulário já abre com Organização escolhida.
+
 ## O que o sorteador faz
 
 ### Eventos
@@ -296,8 +315,12 @@ As regras publicadas dependem destes nomes. Texto das regras em `firestore.rules
   botão.
 - Para ver telas internas sem login, dá para subir o Vite com uma configuração de demonstração
   fora do repositório (em `.claude/`, que é ignorada), usando `resolve.alias` para trocar
-  `acesso/ProvedorAcesso.jsx` (e, nas fases seguintes, os módulos de `dados/`) por versões com
-  dados de mentira. Nunca gravar no Firestore real a partir dessa demonstração.
+  `acesso/ProvedorAcesso.jsx` e os módulos de `dados/` (hoje `dados/membros.js`) por versões com
+  dados de mentira guardados só na memória do navegador. O papel vem da URL, antes do `#`
+  (`?papel=organizador`). Nunca gravar no Firestore real a partir dessa demonstração.
+- Janelas (`componentes/Janela.jsx`): ao abrir, o navegador põe o foco no botão Fechar. Para focar
+  o primeiro campo, marcar o campo com `data-foco` (o `autoFocus` do React não funciona aí).
+- Campos de texto: os estilos de `.campo input` deixam de fora caixas de marcar e botões de opção.
 
 ## Pendências
 

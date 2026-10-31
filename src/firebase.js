@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { DOMINIO_EMPRESA } from './lib/empresa.js'
+
+export { DOMINIO_EMPRESA }
 
 // Configuração web do Firebase. Não é segredo: quem protege os dados são as regras do Firestore.
 const firebaseConfig = {
@@ -18,8 +21,6 @@ export const auth = getAuth(app)
 auth.languageCode = 'pt-BR'
 
 export const db = getFirestore(app)
-
-export const DOMINIO_EMPRESA = 'eletricabahiana.com.br'
 
 export const provedorGoogle = new GoogleAuthProvider()
 // "hd" faz o Google oferecer só contas da empresa. A checagem que vale fica no ProvedorAcesso e nas regras.
