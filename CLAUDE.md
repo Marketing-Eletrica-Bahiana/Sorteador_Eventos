@@ -38,7 +38,7 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
    recomeçar, encerrar e reabrir; quem acompanha vê ao vivo (ver "Palco e sorteio").
 6. (Feita) Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação
    (ver "Dashboard").
-7. Planilha (.xlsx) e encerramento.
+7. (Feita) Planilha (.xlsx) e encerramento (ver "Planilha").
 8. Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas que
    redesenham sem parar.
 
@@ -358,6 +358,23 @@ Tela em `src/telas/evento/Dashboard.jsx`, aberta para todos os papéis, sem masc
   telão.
 - Modo apresentação (`useApresentacao`): tela inteira com o gradiente premium, letras maiores,
   logo branco e botão "Sair".
+
+## Planilha (definido na Fase 7)
+
+Geração em `src/lib/excel.js` (com testes que leem o arquivo de volta); botão e download em
+`src/componentes/BotaoPlanilha.jsx`.
+
+- ExcelJS carregado só quando alguém baixa (`import('exceljs')`), num arquivo separado do site.
+- Abas, com cabeçalho `#001780`, texto branco em Lato Bold, corpo em Lato e cabeçalho fixo:
+  - Sorteados: Nº, Rodada, Nome, Brinde ("Sem brinde" quando não tem), Data (DD/MM/AAAA), Hora
+    (HH:MM), na ordem em que saíram. Data e hora no fuso America/Bahia.
+  - Brindes: Brinde, Quantidade, Sorteados (entregues), Sobraram ("Sem limite" quando não tem).
+  - Participantes: Nº, Nome, Situação ("Sorteado" ou "Na disputa").
+- Nome do arquivo: `Sorteio_[Nome_do_evento]_DD-MM-AAAA.xlsx`, sem os caracteres que o Windows não
+  aceita.
+- "Baixar planilha" a qualquer momento, para todos os papéis: aba Evento, aba Sorteados e
+  dashboard (fora do modo apresentação).
+- Encerrar o evento baixa a planilha sozinho logo depois de gravar o encerramento.
 
 ## O que o sorteador faz
 

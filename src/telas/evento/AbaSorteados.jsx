@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useAvisos } from '../../componentes/Avisos.jsx'
+import BotaoPlanilha from '../../componentes/BotaoPlanilha.jsx'
 import { trocarBrindeDoSorteado } from '../../dados/acoesDoEvento.js'
 import { estoqueDosBrindes } from '../../lib/brindes.js'
 import { formatarHora } from '../../lib/datas.js'
@@ -20,11 +21,14 @@ export default function AbaSorteados({ evento, podeMexer }) {
 
   return (
     <div className="aba-painel">
-      <p className="aba-painel__resumo">
-        <strong>
-          {sorteados.length.toLocaleString('pt-BR')} sorteado{sorteados.length === 1 ? '' : 's'}
-        </strong>
-      </p>
+      <div className="aba-painel__topo">
+        <p className="aba-painel__resumo">
+          <strong>
+            {sorteados.length.toLocaleString('pt-BR')} sorteado{sorteados.length === 1 ? '' : 's'}
+          </strong>
+        </p>
+        <BotaoPlanilha evento={evento} className="botao botao--secundario botao--pequeno" />
+      </div>
       {sorteados.length === 0 ? (
         <p className="texto-suave">Ninguém foi sorteado ainda.</p>
       ) : (

@@ -1993,6 +1993,26 @@ body.apresentando {
   color: var(--marinho);
 }
 
+.aba-painel__topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.botao--pequeno {
+  min-height: 32px;
+  padding: 4px 12px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.botao--pequeno svg {
+  width: 16px;
+  height: 16px;
+}
+
 .acoes--inicio {
   justify-content: flex-start;
 }

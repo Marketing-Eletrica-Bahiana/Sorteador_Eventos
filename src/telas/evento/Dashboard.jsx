@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { ArrowLeft, CalendarDays, ChartColumn, Gift, Maximize, Minimize, Sparkles, Trophy } from 'lucide-react'
 import { Link, useParams } from 'react-router'
+import BotaoPlanilha from '../../componentes/BotaoPlanilha.jsx'
 import CarregandoBloco from '../../componentes/CarregandoBloco.jsx'
 import Indicadores from '../../componentes/Indicadores.jsx'
 import Logo from '../../componentes/Logo.jsx'
@@ -72,10 +73,13 @@ function Painel({ evento, apresentacao }) {
           <div className="acoes">
             {apresentacao.ativo && <Logo formato="linha" cor="branco" altura={32} className="so-largo" />}
             {!apresentacao.ativo && (
-              <Link className="botao botao--secundario" to={`/evento/${evento.id}`}>
-                <Sparkles aria-hidden="true" />
-                Abrir sorteio
-              </Link>
+              <>
+                <Link className="botao botao--secundario" to={`/evento/${evento.id}`}>
+                  <Sparkles aria-hidden="true" />
+                  Abrir sorteio
+                </Link>
+                <BotaoPlanilha evento={evento} />
+              </>
             )}
             <button
               type="button"

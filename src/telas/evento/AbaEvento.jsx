@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChartColumn, Flag, Pencil, RotateCcw, Unlock } from 'lucide-react'
 import { Link } from 'react-router'
 import { useAvisos } from '../../componentes/Avisos.jsx'
+import BotaoPlanilha, { baixarPlanilhaDoEvento } from '../../componentes/BotaoPlanilha.jsx'
 import { useConfirmar } from '../../componentes/Confirmar.jsx'
 import { encerrarEvento, reabrirEvento, recomecarSorteio } from '../../dados/acoesDoEvento.js'
 import { editarEvento } from '../../dados/eventos.js'
@@ -27,13 +28,16 @@ export default function AbaEvento({ evento, podeOrganizar }) {
     if (sim) executar(() => recomecarSorteio(evento.id), 'Sorteio recomeçado. Todo mundo está na disputa de novo.')
   }
 
+  // Ao encerrar, a planilha com o resultado já baixa sozinha.
   async function encerrar() {
     const sim = await confirmar({
       titulo: 'Encerrar o evento',
-      texto: 'O sorteio para e o evento fica só para consulta. Dá para reabrir depois, se precisar.',
+      texto: 'O sorteio para, o evento fica só para consulta e a planilha com o resultado é baixada. Dá para reabrir depois, se precisar.',
       botao: 'Encerrar evento',
     })
-    if (sim) executar(() => encerrarEvento(evento.id), 'Evento encerrado. Valeu, time!')
+    if (!sim) return
+    const encerrou = await executar(() => encerrarEvento(evento.id))
+    if (encerrou) executar(() => baixarPlanilhaDoEvento(evento), 'Evento encerrado e planilha baixada. Valeu, time!')
   }
 
   async function reabrir() {
@@ -90,6 +94,7 @@ export default function AbaEvento({ evento, podeOrganizar }) {
           <ChartColumn aria-hidden="true" />
           Dashboard
         </Link>
+        <BotaoPlanilha evento={evento} />
       </div>
 
       {podeOrganizar && (
