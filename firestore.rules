@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// Regras que o app espera, escritas a partir da descrição das regras publicadas no console.
+// Conferir com o texto publicado (Firestore Database > Regras) antes de trocar.
+// Papéis gravados: admin e organizador. Quem é do domínio sem cadastro ativo só lê.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Só e-mails @eletricabahiana.com.br, com login do Google.
+    function logado() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.matches('.*@eletricabahiana[.]com[.]br$');
+    }
+    function email() { return request.auth.token.email.lower(); }
+    function cadastro() { return get(/databases/$(database)/documents/membros/$(email())).data; }
+    function ativo() {
+      return logado()
+        && exists(/databases/$(database)/documents/membros/$(email()))
+        && cadastro().ativo == true;
+    }
+    function admin() { return ativo() && cadastro().papel == 'admin'; }
+    // Admin pode tudo, então também organiza.
+    function organizador() { return ativo() && cadastro().papel in ['admin', 'organizador']; }
+
+    // Equipe: quem está logado lê (nomes e papéis); só o admin grava.
+    match /membros/{id} {
+      allow read: if logado();
+      allow write: if admin();
+    }
+
+    // Eventos: quem está logado acompanha; organizador cria e atualiza; só o admin exclui.
+    match /eventos/{id} {
+      allow read: if logado();
+      allow create, update: if organizador();
+      allow delete: if admin();
+    }
+  }
+}

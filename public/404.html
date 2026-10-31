@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sorteador de Eventos | Elétrica Bahiana</title>
+    <script>
+      // Endereço sem "#" (ex.: /Sorteador_Eventos/eventos) volta para a rota certa do app.
+      var base = '/Sorteador_Eventos/'
+      var resto = location.pathname.indexOf(base) === 0 ? location.pathname.slice(base.length) : ''
+      location.replace(base + '#/' + resto.replace(/^\/+/, '') + location.search)
+    </script>
+  </head>
+  <body></body>
+</html>
