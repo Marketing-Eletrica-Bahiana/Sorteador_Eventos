@@ -36,7 +36,8 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
    quantidade, ordem e edição (ver "Participantes e brindes").
 5. (Feita) Palco e sorteio: sorteio justo, animação, confete, som, modo Apresentar, desfazer,
    recomeçar, encerrar e reabrir; quem acompanha vê ao vivo (ver "Palco e sorteio").
-6. Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação.
+6. (Feita) Dashboard do evento (`#/evento/:id/painel`) em tempo real, com modo apresentação
+   (ver "Dashboard").
 7. Planilha (.xlsx) e encerramento.
 8. Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas que
    redesenham sem parar.
@@ -341,6 +342,22 @@ Palco em `src/telas/evento/Palco.jsx`; regras em `src/lib/sorteio.js` (com teste
 - Encerrar (`status: "encerrado"`, `encerradoEm`) e reabrir ficam na aba Evento. Encerrado, o
   palco mostra a etiqueta "Encerrado" e esconde os controles.
 - Aba Sorteados: quem organiza troca o brinde de alguém por outro com estoque, ou "Sem brinde".
+
+## Dashboard (definido na Fase 6)
+
+Tela em `src/telas/evento/Dashboard.jsx`, aberta para todos os papéis, sem mascotes.
+
+- Cinco indicadores: participantes, sorteados, na disputa, brindes entregues e brindes
+  restantes ("Sem limite" quando algum brinde não tem limite; `resumoDosBrindes`).
+- Estoque de brindes: uma barra por brinde com limite (entregues sobre a quantidade); brinde sem
+  limite mostra só o texto; esgotado mostra "Acabou".
+- Últimos sorteados: os 12 mais recentes, com Nº, nome, brinde e hora (HH:MM); a rodada mais
+  recente fica destacada com "Acabou de sair".
+- Usa o mesmo `useRevelacao` do palco: uma rodada nova só aparece depois do tempo do giro, com a
+  etiqueta "Sorteando..." enquanto isso. Assim a dashboard numa TV não estraga a surpresa do
+  telão.
+- Modo apresentação (`useApresentacao`): tela inteira com o gradiente premium, letras maiores,
+  logo branco e botão "Sair".
 
 ## O que o sorteador faz
 

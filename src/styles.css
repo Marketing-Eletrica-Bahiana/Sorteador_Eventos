@@ -2111,6 +2111,205 @@ body.apresentando {
   }
 }
 
+/* Dashboard do evento */
+
+.painel__titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.painel__titulo .titulo-pagina {
+  overflow-wrap: anywhere;
+}
+
+.painel__titulo .cartao-evento__data {
+  gap: 8px;
+}
+
+.painel__grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.painel__grade > .bloco + .bloco {
+  margin-top: 0;
+}
+
+.painel__sorteando {
+  margin-left: auto;
+  animation: pulsar 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulsar {
+  to {
+    opacity: 0.55;
+  }
+}
+
+.indicador__valor {
+  overflow-wrap: anywhere;
+}
+
+.estoque,
+.ultimos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.estoque__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.estoque__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  color: var(--marinho);
+}
+
+.estoque__numeros {
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.ultimos {
+  gap: 4px;
+}
+
+.ultimos__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-left: 4px solid transparent;
+  border-radius: var(--raio-etiqueta);
+}
+
+.ultimos__item:nth-child(even) {
+  background: var(--medio-10);
+}
+
+.ultimos__item--agora {
+  border-left-color: var(--brilhante);
+  background: var(--brilhante-10);
+  animation: revelar 500ms ease-out both;
+}
+
+.ultimos__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ultimos__texto strong {
+  color: var(--marinho);
+  overflow-wrap: anywhere;
+}
+
+.ultimos__texto span {
+  font-size: 0.875rem;
+  color: var(--brilhante);
+  font-weight: 700;
+}
+
+.ultimos__hora {
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-suave);
+}
+
+/* Dashboard no modo apresentação: tela inteira, gradiente premium, para TV */
+
+.painel-tv {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  padding: 4vh 4vw;
+  overflow-y: auto;
+  background: var(--gradiente-premium);
+  color: var(--branco);
+}
+
+.painel-tv .titulo-pagina,
+.painel-tv .cartao-evento__data,
+.painel-tv .bloco__titulo,
+.painel-tv .estoque__linha,
+.painel-tv .ultimos__texto strong {
+  color: var(--branco);
+}
+
+.painel-tv .titulo-pagina {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+.painel-tv .titulo-pagina svg,
+.painel-tv .bloco__titulo svg,
+.painel-tv .cartao-evento__data svg {
+  color: var(--medio);
+}
+
+.painel-tv .bloco {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+.painel-tv .bloco__titulo {
+  font-size: clamp(1.25rem, 2vw, 2rem);
+}
+
+.painel-tv .texto-suave,
+.painel-tv .estoque__numeros,
+.painel-tv .ultimos__hora {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.painel-tv .estoque__linha strong,
+.painel-tv .ultimos__texto strong {
+  font-size: clamp(1.125rem, 1.8vw, 1.75rem);
+}
+
+.painel-tv .ultimos__texto span {
+  color: var(--medio);
+  font-size: clamp(0.9375rem, 1.3vw, 1.25rem);
+}
+
+.painel-tv .ultimos__item:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.painel-tv .ultimos__item--agora {
+  border-left-color: var(--branco);
+  background: rgba(0, 55, 255, 0.35);
+}
+
+.painel-tv .barra-progresso {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.painel-tv .linha-circuito {
+  background: var(--medio);
+}
+
+@media (max-width: 960px) {
+  .painel__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Barra de progresso (sorteados do evento, estoque dos brindes) */
 
 .barra-progresso {
@@ -2251,6 +2450,23 @@ body.apresentando {
 @media (max-width: 340px) {
   .indicadores {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Cinco indicadores (dashboard do evento) */
+.indicadores:has(> :nth-child(5)) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .indicadores:has(> :nth-child(5)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .indicadores:has(> :nth-child(5)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
