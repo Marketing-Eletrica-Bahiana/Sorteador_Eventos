@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Gift, Maximize, Minimize, Minus, Plus, Sparkles, Undo2, Volume2, VolumeX } from 'lucide-react'
+import { Gift, Minus, Plus, Sparkles, Undo2 } from 'lucide-react'
 import { useAcesso } from '../../acesso/ProvedorAcesso.jsx'
 import { useAvisos } from '../../componentes/Avisos.jsx'
 import Confete from '../../componentes/Confete.jsx'
 import { useConfirmar } from '../../componentes/Confirmar.jsx'
-import Logo from '../../componentes/Logo.jsx'
 import { definirBrindeDaVez, definirPorVez, desfazerRodada, sortearRodada } from '../../dados/acoesDoEvento.js'
 import { useMovimentoReduzido } from '../../hooks/useMovimentoReduzido.js'
 import { useRevelacao } from '../../hooks/useRevelacao.js'
 import { useSom } from '../../hooks/useSom.js'
 import { brindesDisponiveis } from '../../lib/brindes.js'
-import { formatarData } from '../../lib/datas.js'
 import { numerosDoEvento } from '../../lib/eventos.js'
 import { patterns } from '../../lib/marca.js'
 import { MAXIMO_POR_VEZ, situacaoDoSorteio, sorteadosDaRodada, ultimaRodada } from '../../lib/sorteio.js'
+import TopoDoPalco from './TopoDoPalco.jsx'
 
 const numero = (n) => n.toLocaleString('pt-BR')
 const ehCampoDeTexto = (alvo) => alvo?.closest?.('input, textarea, select, [contenteditable="true"]')
@@ -104,36 +103,7 @@ export default function Palco({ evento, podeSortear, apresentacao }) {
     >
       {revelacao.festa > 0 && <Confete key={revelacao.festa} reduzido={reduzido} />}
 
-      <header className="palco__topo">
-        <div className="palco__evento">
-          <h1 className="palco__titulo">{evento.titulo}</h1>
-          <span className="palco__data">
-            {formatarData(evento.data)}
-            {evento.status === 'encerrado' && <span className="etiqueta etiqueta--claro">Encerrado</span>}
-          </span>
-        </div>
-        <div className="palco__botoes">
-          {apresentacao.ativo && <Logo formato="linha" cor="branco" altura={32} className="so-largo" />}
-          <button
-            type="button"
-            className="botao-icone botao-icone--claro"
-            onClick={som.alternar}
-            aria-pressed={som.ligado}
-            aria-label={som.ligado ? 'Desligar o som' : 'Ligar o som'}
-            title={som.ligado ? 'Desligar o som' : 'Ligar o som'}
-          >
-            {som.ligado ? <Volume2 aria-hidden="true" /> : <VolumeX aria-hidden="true" />}
-          </button>
-          <button
-            type="button"
-            className="botao botao--claro"
-            onClick={apresentacao.ativo ? apresentacao.sair : apresentacao.entrar}
-          >
-            {apresentacao.ativo ? <Minimize aria-hidden="true" /> : <Maximize aria-hidden="true" />}
-            {apresentacao.ativo ? 'Sair' : 'Apresentar'}
-          </button>
-        </div>
-      </header>
+      <TopoDoPalco evento={evento} som={som} apresentacao={apresentacao} />
 
       <div className="palco__brinde-da-vez" aria-live="polite">
         <Gift aria-hidden="true" />

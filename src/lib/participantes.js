@@ -15,6 +15,9 @@ export function garantirAberto(evento) {
 
 export const idsSorteados = (evento) => new Set((evento.sorteados ?? []).map((s) => s.id))
 
+// Quem já saiu no sorteio ou já girou a roleta faz parte do resultado do evento: não sai da lista.
+export const idsComResultado = (evento) => new Set([...idsSorteados(evento), ...(evento.giros ?? []).map((g) => g.id)])
+
 // Um nome por linha (colar ou arquivo .txt).
 export const nomesDoTexto = (texto) => String(texto ?? '').split(/\r?\n/).map(limparNome).filter(Boolean)
 
@@ -97,15 +100,20 @@ export function juntarParticipantes(atuais, nomes, limite = LIMITE_DE_PARTICIPAN
 export function removerParticipante(evento, id) {
   garantirAberto(evento)
   if (idsSorteados(evento).has(id)) throw new Error('Quem já foi sorteado não sai da lista.')
-  return { participantes: (evento.participantes ?? []).filter((p) => p.id !== id) }
+  if (idsComResultado(evento).has(id)) throw new Error('Quem já girou a roleta não sai da lista.')
+  const mudancas = { participantes: (evento.participantes ?? []).filter((p) => p.id !== id) }
+  if (evento.roletaVez === id) mudancas.roletaVez = null
+  return mudancas
 }
 
-// "Apagar a lista": sai todo mundo que ainda não foi sorteado. Quem já saiu fica, porque faz parte
-// do resultado do evento.
+// "Apagar a lista": sai todo mundo que ainda não foi sorteado nem girou a roleta. Quem já saiu ou
+// girou fica, porque faz parte do resultado do evento.
 export function apagarNaoSorteados(evento) {
   garantirAberto(evento)
-  const sorteados = idsSorteados(evento)
-  return { participantes: (evento.participantes ?? []).filter((p) => sorteados.has(p.id)) }
+  const ficam = idsComResultado(evento)
+  const mudancas = { participantes: (evento.participantes ?? []).filter((p) => ficam.has(p.id)) }
+  if (evento.roletaVez && !ficam.has(evento.roletaVez)) mudancas.roletaVez = null
+  return mudancas
 }
 
 // Busca na lista de participantes, com cada palavra em qualquer ordem.

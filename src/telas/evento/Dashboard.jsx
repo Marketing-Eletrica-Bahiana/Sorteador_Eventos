@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ArrowLeft, CalendarDays, ChartColumn, Gift, Maximize, Minimize, Sparkles, Trophy } from 'lucide-react'
+import { ArrowLeft, CalendarDays, ChartColumn, Disc3, Gift, Maximize, Minimize, Sparkles, Trophy } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 import BotaoPlanilha from '../../componentes/BotaoPlanilha.jsx'
 import CarregandoBloco from '../../componentes/CarregandoBloco.jsx'
@@ -8,11 +8,12 @@ import Logo from '../../componentes/Logo.jsx'
 import { useEvento } from '../../dados/eventos.js'
 import { useApresentacao } from '../../hooks/useApresentacao.js'
 import { useMovimentoReduzido } from '../../hooks/useMovimentoReduzido.js'
-import { useRevelacao } from '../../hooks/useRevelacao.js'
+import { useRevelacao, useRevelacaoDaRoleta } from '../../hooks/useRevelacao.js'
 import { estoqueDosBrindes, resumoDosBrindes } from '../../lib/brindes.js'
 import { formatarData, formatarHora } from '../../lib/datas.js'
 import { mensagemDeErro } from '../../lib/erros.js'
 import { numerosDoEvento, STATUS } from '../../lib/eventos.js'
+import { eventoAteOGiro, listaDeGiros, numerosDaRoleta, RESULTADOS } from '../../lib/roleta.js'
 import { listaDeSorteados, ultimaRodada } from '../../lib/sorteio.js'
 
 const ULTIMOS = 12
@@ -54,6 +55,11 @@ function Painel({ evento, apresentacao }) {
   const brindes = resumoDosBrindes(visivel)
   const estoque = useMemo(() => estoqueDosBrindes(visivel), [visivel])
   const ultimos = useMemo(() => listaDeSorteados(visivel).reverse().slice(0, ULTIMOS), [visivel])
+
+  // A roleta segue o tempo da roda, igual ao palco. O bloco só aparece depois do primeiro giro.
+  const revelacaoDaRoleta = useRevelacaoDaRoleta((evento.giros ?? []).length)
+  const roletaVisivel = useMemo(() => eventoAteOGiro(evento, revelacaoDaRoleta.rodada), [evento, revelacaoDaRoleta.rodada])
+  const girandoRoleta = revelacaoDaRoleta.fase === 'girando'
 
   return (
     <>
@@ -110,6 +116,8 @@ function Painel({ evento, apresentacao }) {
       />
 
       <div className="painel__grade">
+        {(revelacaoDaRoleta.rodada > 0 || girandoRoleta) && <BlocoDaRoleta evento={roletaVisivel} girando={girandoRoleta} />}
+
         <section className="bloco">
           <h2 className="bloco__titulo">
             <Gift aria-hidden="true" />
@@ -179,5 +187,39 @@ function Painel({ evento, apresentacao }) {
         </section>
       </div>
     </>
+  )
+}
+
+// Resumo da roleta na dashboard: os números e os giros mais recentes.
+function BlocoDaRoleta({ evento, girando }) {
+  const n = numerosDaRoleta(evento)
+  const giros = useMemo(() => listaDeGiros(evento).reverse().slice(0, ULTIMOS), [evento])
+
+  return (
+    <section className="bloco painel__roleta">
+      <h2 className="bloco__titulo">
+        <Disc3 aria-hidden="true" />
+        Roleta
+        {girando && <span className="etiqueta etiqueta--aberto painel__sorteando">Girando...</span>}
+      </h2>
+      <p className="texto-suave">
+        {numero(n.ganharam)} {n.ganharam === 1 ? 'ganhou' : 'ganharam'} · {numero(n.naoGanharam)} não{' '}
+        {n.naoGanharam === 1 ? 'ganhou' : 'ganharam'} · {numero(n.faltam)} {n.faltam === 1 ? 'falta girar' : 'faltam girar'}
+      </p>
+      {giros.length > 0 && (
+        <ol className="ultimos" aria-live="polite">
+          {giros.map((g) => (
+            <li key={g.numero} className="ultimos__item">
+              <span className="lista-painel__ordem">{g.numero}</span>
+              <div className="ultimos__texto">
+                <strong>{g.nome}</strong>
+              </div>
+              <span className={`etiqueta etiqueta--${g.resultado}`}>{RESULTADOS[g.resultado].rotulo}</span>
+              <span className="ultimos__hora">{formatarHora(g.em)}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
   )
 }

@@ -3,6 +3,7 @@
 import { alterarEvento } from '../dados/eventos.js'
 import { escolherBrindeDaVez, moverBrinde, removerBrinde, salvarBrinde } from '../lib/brindes.js'
 import { apagarNaoSorteados, garantirAberto, juntarParticipantes, removerParticipante } from '../lib/participantes.js'
+import { desfazerUltimoGiro, girarRoleta, marcarQuemGira, recomecarRoleta } from '../lib/roleta.js'
 import {
   desfazerUltimaRodada,
   encerrar,
@@ -61,3 +62,12 @@ export const definirPorVez = (id, quantidade) => alterarEvento(id, (evento) => m
 export const encerrarEvento = (id) => alterarEvento(id, (evento) => encerrar(evento, new Date()))
 
 export const reabrirEvento = (id) => alterarEvento(id, reabrir)
+
+// Roleta. Quem está na tela vê o resultado pela atualização do evento, igual a quem só acompanha.
+export const marcarPessoaQueGira = (id, idParticipante) => alterarEvento(id, (evento) => marcarQuemGira(evento, idParticipante))
+
+export const girarDaVez = (id, porEmail) => alterarEvento(id, (evento) => girarRoleta(evento, { porEmail }).mudancas)
+
+export const desfazerGiro = (id) => alterarEvento(id, desfazerUltimoGiro)
+
+export const recomecarGiros = (id) => alterarEvento(id, recomecarRoleta)

@@ -80,6 +80,28 @@ describe('participantes', () => {
     expect(apagarNaoSorteados(evento).participantes).toEqual([{ id: 'p2', nome: 'José Lima' }])
   })
 
+  describe('com a roleta', () => {
+    const comGiros = {
+      ...evento,
+      giros: [{ id: 'p3', casa: 3, resultado: 'gire_de_novo' }],
+    }
+
+    it('não remove quem já girou a roleta', () => {
+      expect(() => removerParticipante(comGiros, 'p3')).toThrow('Quem já girou a roleta não sai da lista.')
+    })
+
+    it('apagar a lista mantém também quem já girou', () => {
+      expect(apagarNaoSorteados(comGiros).participantes.map((p) => p.id)).toEqual(['p2', 'p3'])
+    })
+
+    it('tira da vez quem saiu da lista', () => {
+      expect(removerParticipante({ ...evento, roletaVez: 'p1' }, 'p1').roletaVez).toBeNull()
+      expect(removerParticipante({ ...evento, roletaVez: 'p3' }, 'p1')).not.toHaveProperty('roletaVez')
+      expect(apagarNaoSorteados({ ...evento, roletaVez: 'p1' }).roletaVez).toBeNull()
+      expect(apagarNaoSorteados({ ...comGiros, roletaVez: 'p3' })).not.toHaveProperty('roletaVez')
+    })
+  })
+
   it('não mexe em evento encerrado', () => {
     const encerrado = { ...evento, status: 'encerrado' }
     expect(() => removerParticipante(encerrado, 'p1')).toThrow('O evento está encerrado. Reabra para mudar.')

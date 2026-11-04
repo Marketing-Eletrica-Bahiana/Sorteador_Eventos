@@ -4,6 +4,7 @@
 import { estoqueDosBrindes } from './brindes.js'
 import { formatarData, formatarDataDoMomento, formatarHora } from './datas.js'
 import { idsSorteados } from './participantes.js'
+import { listaDeGiros, RESULTADOS, resultadoPorPessoa } from './roleta.js'
 import { listaDeSorteados } from './sorteio.js'
 
 const MARINHO = 'FF001780'
@@ -45,8 +46,23 @@ export function linhasDaPlanilha(evento) {
     b.restantes ?? SEM_LIMITE,
   ])
   const saiu = idsSorteados(evento)
-  const participantes = (evento.participantes ?? []).map((p, i) => [i + 1, p.nome, saiu.has(p.id) ? 'Sorteado' : 'Na disputa'])
-  return { sorteados, brindes, participantes }
+  const roleta = listaDeGiros(evento).map((g) => [
+    g.numero,
+    g.nome,
+    RESULTADOS[g.resultado].rotulo,
+    formatarDataDoMomento(g.em),
+    formatarHora(g.em),
+  ])
+  // A coluna Roleta só aparece nos eventos em que alguém girou.
+  const resultados = resultadoPorPessoa(evento)
+  const colunaDaRoleta = (p) => (roleta.length ? [RESULTADOS[resultados.get(p.id)]?.rotulo ?? 'Falta girar'] : [])
+  const participantes = (evento.participantes ?? []).map((p, i) => [
+    i + 1,
+    p.nome,
+    saiu.has(p.id) ? 'Sorteado' : 'Na disputa',
+    ...colunaDaRoleta(p),
+  ])
+  return { sorteados, brindes, participantes, roleta }
 }
 
 export async function gerarPlanilha(evento) {
@@ -86,9 +102,24 @@ export async function gerarPlanilha(evento) {
       { titulo: 'Nº', largura: 7 },
       { titulo: 'Nome', largura: 40 },
       { titulo: 'Situação', largura: 14 },
+      ...(linhas.roleta.length ? [{ titulo: 'Roleta', largura: 14 }] : []),
     ],
     linhas.participantes,
   )
+  if (linhas.roleta.length) {
+    aba(
+      pasta,
+      'Roleta',
+      [
+        { titulo: 'Nº', largura: 6 },
+        { titulo: 'Nome', largura: 40 },
+        { titulo: 'Resultado', largura: 15 },
+        { titulo: 'Data', largura: 12 },
+        { titulo: 'Hora', largura: 8 },
+      ],
+      linhas.roleta,
+    )
+  }
   return pasta.xlsx.writeBuffer()
 }
 

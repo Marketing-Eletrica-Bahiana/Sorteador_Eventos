@@ -42,6 +42,9 @@ Sorteador dos eventos internos da EB. Cada evento tem participantes, brindes e s
 8. (Feita) Revisão geral: paleta, fontes, datas e horas, permissões x regras, celular, telas
    que redesenham sem parar (ver "Revisão").
 
+9. (Feita) Roleta para tablet: aba ao lado do Sorteio, integrada à lista de participantes, com giro
+   pelo toque na roda (ver "Roleta").
+
 Em 31/10/2026, depois de aprovar as Fases 1 a 3, a pessoa autorizou fazer as Fases 4 a 8 em
 sequência, sem pedir aprovação entre elas, mantendo teste, commit e publicação ao fim de cada uma.
 
@@ -150,6 +153,10 @@ real:
 | Ícone, para espaços pequenos (180 x 180 px) | `Icone_Branco.png` | `Icone_Azul.png` |
 
 - `Icone_Azul.png` é o favicon.
+- Logos do CAE (Centro de Apoio ao Eletricista): `Logo_CAE_Colorida_Vertical.png` no centro da
+  roleta (`logoDoCae` em `src/lib/marca.js`), sobre disco branco. As outras três
+  (`Logo_CAE_Colorida_Horizontal.png` e as duas `Logo_CAE_Branca_*.png`) estão guardadas para
+  quando precisar. É a marca do CAE, usada como está: as cores dela ficam fora da regra da paleta.
 - Nunca recriar o logo em texto. Nunca aplicar sombra, rotação ou mudança de cor no logo.
 - Título da aba do navegador: `Sorteador de Eventos | Elétrica Bahiana`.
 
@@ -184,7 +191,7 @@ transparente).
 - Hover de botão: `brightness(0.92)` e `translateY(-1px)`.
 - Hover de cartão: `translateY(-4px)`.
 - Os valores acima estão como variáveis no topo de `src/styles.css`.
-- Animações respeitam `prefers-reduced-motion`.
+- Animações respeitam `prefers-reduced-motion`. Exceção: a Roleta (ver "Roleta").
 
 ### Tabelas
 
@@ -229,6 +236,9 @@ As regras publicadas dependem destes nomes. Texto das regras em `firestore.rules
   - `brindeAtual`, `porVez`
   - `participantes`: lista de `{id, nome}`
   - `sorteados`: lista de `{id, em, brinde, rodada, porEmail}`
+  - `giros`: lista de `{id, casa, resultado, em, porEmail}`, com `resultado` `"ganhou"` |
+    `"gire_de_novo"` | `"nao_ganhou"` (só existe depois do primeiro giro)
+  - `roletaVez`: id de quem está marcado para girar agora, ou null
   - `criadoPorEmail`, `criadoPorNome`, `criadoEm`, `atualizadoEm`, `encerradoEm`
 - Toda alteração de evento em transação, para dois organizadores ao mesmo tempo nunca
   sobrescreverem um ao outro nem sortearem a mesma pessoa duas vezes.
@@ -376,6 +386,46 @@ Geração em `src/lib/excel.js` (com testes que leem o arquivo de volta); botão
   dashboard (fora do modo apresentação).
 - Encerrar o evento baixa a planilha sozinho logo depois de gravar o encerramento.
 
+## Roleta (definido na Fase 9)
+
+Tela em `src/telas/evento/Roleta.jsx`; roda em `Roda.jsx`; lista para marcar em `AbaQuemGira.jsx`;
+resultados em `AbaResultados.jsx`; regras
+em `src/lib/roleta.js` (com testes); gravação em `src/dados/acoesDoEvento.js`.
+
+- Aba "Roleta" ao lado de "Sorteio", em cima do palco. O modo fica no endereço
+  (`#/evento/:id?modo=roleta`), para o tablet e a TV abrirem direto. Na Roleta, o painel lateral tem
+  Quem gira, Participantes, Resultados e Evento. O nome no topo é o do evento; a logo do centro é
+  sempre a do CAE.
+- 16 casas, no sentido horário a partir do topo: Não ganhou, Ganhou, Não ganhou, Gire de Novo,
+  repetido 4 vezes (`CASAS`). São 4 Ganhou (`#001780`), 4 Gire de Novo (`#4069ff`) e 8 Não ganhou
+  (`#d4121a`), com texto branco. Como Gire de Novo só repete o giro, 1 em cada 3 pessoas ganha.
+- Todo mundo da lista gira uma vez, sem sorteio de quem gira. Quem organiza marca a pessoa na aba
+  Quem gira (com busca). No tablet (até 1024 px) e na tela cheia, sem o painel ao lado, o botão
+  "Marcar quem gira" abre a mesma lista numa janela; tocar na roda sem ninguém marcado também abre.
+- Girar é tocar na roda: um toque rápido ou um arraste, e a roda acompanha o dedo enquanto ele está
+  nela. Ao soltar, ela já sai girando (`aguardando`), sem esperar a gravação. O toque só dá a partida:
+  a casa sai de `inteiroAleatorio` (mesma chance para as 16), e a roda é só animação até ela. Tudo em
+  transação (`alterarEvento`). No computador, clique, Enter ou barra de espaço também giram.
+- Ganhou e Não ganhou encerram a vez da pessoa, que não pode ser marcada de novo. Gire de Novo a
+  mantém marcada, sem poder trocar, até ela girar.
+- Desfazer tira o último giro e deixa marcada a pessoa que girou. Recomeçar (aba Resultados) apaga os
+  giros e mantém a lista, com confirmação.
+- Sem ligação com os brindes: Ganhou só registra o resultado. Sorteio e Roleta são independentes: a
+  mesma pessoa pode sair nos dois. Quem girou não sai da lista de participantes, igual a quem foi
+  sorteado.
+- Animação igual para todos, pela atualização do evento: giro por 5,6 s (`DURACAO_DA_ROLETA`).
+  Enquanto a roda gira, números, aba Resultados, aba
+  Participantes e dashboard ainda não contam o giro novo. Confete e fanfarra só em Ganhou.
+- A Roleta não respeita `prefers-reduced-motion`, por decisão de 04/11/2026: com os Efeitos de
+  animação do Windows desligados, a roda não giraria, e o giro é a própria brincadeira. O palco do
+  Sorteio continua respeitando (`useRevelacaoDaRoleta` em `src/hooks/useRevelacao.js`).
+- A seta fica à direita da roda, onde o texto da casa aparece na horizontal.
+- Para girar no tablet, ele precisa estar com login de quem tem papel Organização ou Administração.
+- Quem só acompanha vê a mesma animação, sem controles. Modo Apresentar igual ao do palco.
+- Dashboard: bloco "Roleta" com os números e os últimos giros, depois do primeiro giro.
+- Planilha: aba Roleta (Nº, Nome, Resultado, Data, Hora) e coluna Roleta em Participantes ("Ganhou",
+  "Não ganhou" ou "Falta girar"), só nos eventos em que alguém girou.
+
 ## O que o sorteador faz
 
 ### Eventos
@@ -426,10 +476,12 @@ Geração em `src/lib/excel.js` (com testes que leem o arquivo de volta); botão
    para organizadores.
 3. Sorteio (`#/evento/:id`): palco e painel lateral com abas Participantes, Brindes, Sorteados e
    Evento.
-4. Dashboard do evento (`#/evento/:id/painel`), em tempo real: números do evento, estoque de
+4. Roleta (`#/evento/:id?modo=roleta`): roda de 16 casas que gira pelo toque, pessoa marcada e painel
+   lateral com abas Quem gira, Participantes, Resultados e Evento.
+5. Dashboard do evento (`#/evento/:id/painel`), em tempo real: números do evento, estoque de
    brindes, últimos sorteados (com destaque para quem acabou de sair) e modo apresentação em tela
    cheia com o gradiente premium, para TV.
-5. Equipe (`#/equipe`, só admin): cadastrar, editar papel, ativar e desativar membros.
+6. Equipe (`#/equipe`, só admin): cadastrar, editar papel, ativar e desativar membros.
 
 ## Segurança
 
@@ -483,6 +535,8 @@ Geração em `src/lib/excel.js` (com testes que leem o arquivo de volta); botão
 - Pasta `assets/` (enviada antes do projeto: fundo azul e vermelho, faixa de circuito, logo SVG
   branco, mascotes em .webp e ícone): não é usada pelo app. Falta decidir se fica ou sai. O fundo
   azul e vermelho mistura as duas cores e gera tons de roxo, fora da paleta.
+- Logo do CAE no centro da roleta: o arquivo tem só 178 x 156 px. Em telão grande pode perder
+  nitidez; trocar por uma versão maior ou em vetor quando houver.
 - Nomes trocados no par de logos azuis: se a marca corrigir os arquivos, ajustar a tabela de logos
   e `src/lib/marca.js`.
 

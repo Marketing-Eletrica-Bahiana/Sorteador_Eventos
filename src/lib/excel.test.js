@@ -56,6 +56,44 @@ describe('planilha do evento', () => {
     expect(pasta.getWorksheet('Participantes').rowCount).toBe(4)
   })
 
+  it('sem giros, não traz nada da roleta', () => {
+    expect(linhasDaPlanilha(evento).roleta).toEqual([])
+  })
+
+  describe('com a roleta', () => {
+    const comRoleta = {
+      ...evento,
+      giros: [
+        { id: 'p1', casa: 3, resultado: 'gire_de_novo', em: new Date('2026-12-18T23:10:00Z') },
+        { id: 'p1', casa: 1, resultado: 'ganhou', em: new Date('2026-12-18T23:11:00Z') },
+        { id: 'p2', casa: 0, resultado: 'nao_ganhou', em: new Date('2026-12-18T23:12:00Z') },
+      ],
+    }
+
+    it('lista todos os giros e o resultado final de cada pessoa', () => {
+      const linhas = linhasDaPlanilha(comRoleta)
+      expect(linhas.roleta).toEqual([
+        [1, 'Ana Souza', 'Gire de Novo', '18/12/2026', '20:10'],
+        [2, 'Ana Souza', 'Ganhou', '18/12/2026', '20:11'],
+        [3, 'José Lima', 'Não ganhou', '18/12/2026', '20:12'],
+      ])
+      expect(linhas.participantes).toEqual([
+        [1, 'Ana Souza', 'Na disputa', 'Ganhou'],
+        [2, 'José Lima', 'Sorteado', 'Não ganhou'],
+        [3, 'Carla Dias', 'Sorteado', 'Falta girar'],
+      ])
+    })
+
+    it('acrescenta a aba Roleta e a coluna em Participantes no .xlsx', async () => {
+      const pasta = new ExcelJS.Workbook()
+      await pasta.xlsx.load(await gerarPlanilha(comRoleta))
+      expect(pasta.worksheets.map((a) => a.name)).toEqual(['Sorteados', 'Brindes', 'Participantes', 'Roleta'])
+      expect(pasta.getWorksheet('Roleta').getRow(1).values.slice(1)).toEqual(['Nº', 'Nome', 'Resultado', 'Data', 'Hora'])
+      expect(pasta.getWorksheet('Roleta').getRow(3).values.slice(1)).toEqual([2, 'Ana Souza', 'Ganhou', '18/12/2026', '20:11'])
+      expect(pasta.getWorksheet('Participantes').getRow(1).values.slice(1)).toEqual(['Nº', 'Nome', 'Situação', 'Roleta'])
+    })
+  })
+
   it('dá um nome de arquivo que o Windows aceita', () => {
     expect(nomeDoArquivo(evento)).toBe('Sorteio_Festa_de_Fim_de_Ano_2026_18-12-2026.xlsx')
     expect(nomeDoArquivo({ titulo: '  ', data: '2026-05-08' })).toBe('Sorteio_Evento_08-05-2026.xlsx')

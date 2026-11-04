@@ -3,8 +3,16 @@ import { FileUp, LoaderCircle, Search, Trash2, UserPlus, X } from 'lucide-react'
 import { useAvisos } from '../../componentes/Avisos.jsx'
 import { useConfirmar } from '../../componentes/Confirmar.jsx'
 import { adicionarParticipantes, apagarParticipantes, tirarParticipante } from '../../dados/acoesDoEvento.js'
-import { buscarParticipantes, idsSorteados, LIMITE_DE_PARTICIPANTES, nomesDoTexto } from '../../lib/participantes.js'
+import { useRevelacaoDaRoleta } from '../../hooks/useRevelacao.js'
+import {
+  buscarParticipantes,
+  idsComResultado,
+  idsSorteados,
+  LIMITE_DE_PARTICIPANTES,
+  nomesDoTexto,
+} from '../../lib/participantes.js'
 import { EXTENSOES_ACEITAS, nomesDoArquivo } from '../../lib/planilha.js'
+import { eventoAteOGiro, numerosDaRoleta, RESULTADOS, resultadoPorPessoa } from '../../lib/roleta.js'
 
 const MOSTRAR_ATE = 300
 const numero = (n) => n.toLocaleString('pt-BR')
@@ -18,7 +26,7 @@ function resumoDaInclusao({ adicionados, repetidos, foraDoLimite }) {
 }
 
 // Aba Participantes do painel lateral. Quem só acompanha vê a lista, sem os botões.
-export default function AbaParticipantes({ evento, podeMexer }) {
+export default function AbaParticipantes({ evento, podeMexer, modo = 'sorteio' }) {
   const { avisar, executar } = useAvisos()
   const [janelaConfirmar, confirmar] = useConfirmar()
   const [colados, setColados] = useState('')
@@ -29,6 +37,14 @@ export default function AbaParticipantes({ evento, podeMexer }) {
   const sorteados = useMemo(() => idsSorteados(evento), [evento])
   const encontrados = useMemo(() => buscarParticipantes(participantes, busca), [participantes, busca])
   const naoSorteados = participantes.length - participantes.filter((p) => sorteados.has(p.id)).length
+  const comResultado = useMemo(() => idsComResultado(evento), [evento])
+  const semResultado = participantes.length - participantes.filter((p) => comResultado.has(p.id)).length
+  const naRoleta = modo === 'roleta'
+
+  // Na Roleta, o resultado de cada pessoa só aparece quando a roda para.
+  const revelacao = useRevelacaoDaRoleta((evento.giros ?? []).length)
+  const girosVisiveis = useMemo(() => eventoAteOGiro(evento, revelacao.rodada), [evento, revelacao.rodada])
+  const resultados = useMemo(() => resultadoPorPessoa(girosVisiveis), [girosVisiveis])
 
   async function incluir(nomes, origem) {
     if (!nomes.length) {
@@ -71,7 +87,7 @@ export default function AbaParticipantes({ evento, podeMexer }) {
   async function apagarTudo() {
     const sim = await confirmar({
       titulo: 'Apagar a lista',
-      texto: `${plural(naoSorteados, 'participante que ainda não foi sorteado sai', 'participantes que ainda não foram sorteados saem')} da lista. Quem já foi sorteado continua.`,
+      texto: `${plural(semResultado, 'participante que ainda não foi sorteado nem girou a roleta sai', 'participantes que ainda não foram sorteados nem giraram a roleta saem')} da lista. Quem já foi sorteado ou girou continua.`,
       botao: 'Apagar a lista',
       perigo: true,
     })
@@ -82,7 +98,10 @@ export default function AbaParticipantes({ evento, podeMexer }) {
     <div className="aba-painel">
       <p className="aba-painel__resumo">
         <strong>{plural(participantes.length, 'participante', 'participantes')}</strong>
-        <span className="texto-suave"> · {numero(naoSorteados)} na disputa</span>
+        <span className="texto-suave">
+          {' '}
+          · {naRoleta ? `${plural(numerosDaRoleta(girosVisiveis).faltam, 'falta girar', 'faltam girar')}` : `${numero(naoSorteados)} na disputa`}
+        </span>
       </p>
 
       {podeMexer && (
@@ -125,11 +144,13 @@ export default function AbaParticipantes({ evento, podeMexer }) {
         <ul className="lista-painel">
           {encontrados.slice(0, MOSTRAR_ATE).map((participante) => {
             const saiu = sorteados.has(participante.id)
+            const resultado = resultados.get(participante.id)
             return (
               <li key={participante.id} className="lista-painel__item">
                 <span className="lista-painel__nome">{participante.nome}</span>
-                {saiu && <span className="etiqueta etiqueta--aberto">Sorteado</span>}
-                {podeMexer && !saiu && (
+                {!naRoleta && saiu && <span className="etiqueta etiqueta--aberto">Sorteado</span>}
+                {naRoleta && resultado && <span className={`etiqueta etiqueta--${resultado}`}>{RESULTADOS[resultado].rotulo}</span>}
+                {podeMexer && !comResultado.has(participante.id) && (
                   <button
                     type="button"
                     className="botao-icone botao-icone--perigo"
@@ -151,7 +172,7 @@ export default function AbaParticipantes({ evento, podeMexer }) {
         </p>
       )}
 
-      {podeMexer && naoSorteados > 0 && (
+      {podeMexer && semResultado > 0 && (
         <button type="button" className="botao botao--secundario botao--perigo-claro" onClick={apagarTudo}>
           <Trash2 aria-hidden="true" />
           Apagar a lista

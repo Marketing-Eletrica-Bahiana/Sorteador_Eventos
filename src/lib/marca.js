@@ -25,6 +25,9 @@ export const caixasDosLogos = {
   icone: { x: 9, y: 22, largura: 162, altura: 136, lado: 180 },
 }
 
+// Logo do Centro de Apoio ao Eletricista, no centro da roleta.
+export const logoDoCae = arquivo('logos/Logo_CAE_Colorida_Vertical.png')
+
 export const mascotes = {
   ebinho: arquivo('mascotes/Mascote_Ebinho.png'),
   ebinha: arquivo('mascotes/Mascote_Ebinha.png'),

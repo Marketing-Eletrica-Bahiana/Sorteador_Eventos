@@ -11,6 +11,8 @@ Endereço: https://marketing-eletrica-bahiana.github.io/Sorteador_Eventos/
 - Visão geral dos eventos, com indicadores, filtro e busca.
 - Participantes colados ou importados (.txt, .csv, .xlsx) e brindes com quantidade.
 - Palco do sorteio para telão, com sorteio justo, animação, confete, som e modo Apresentar.
+- Roleta de 16 casas para tablet: quem organiza marca a pessoa da lista, ela toca na roda para girar
+  e o site registra quem ganhou.
 - Dashboard do evento em tempo real, com modo para TV.
 - Planilha .xlsx com sorteados, brindes e participantes.
 - Tela Equipe para o admin cadastrar quem organiza.

@@ -1930,6 +1930,410 @@ body.apresentando {
   display: none;
 }
 
+/* Sorteio ou Roleta, em cima do palco */
+
+.abas--modos {
+  margin-bottom: 16px;
+}
+
+.abas--modos[hidden] {
+  display: none;
+}
+
+.abas--modos .abas__item {
+  padding: 12px 24px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  font-size: 1.0625rem;
+  cursor: pointer;
+}
+
+.abas--modos .abas__item.ativo {
+  border-bottom-color: var(--brilhante);
+}
+
+/* Roleta: a roda de um lado, a pessoa da vez e os controles do outro */
+
+.roleta {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+}
+
+.roleta__lado {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.roleta__controles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A lista de quem gira fica no painel lateral. Sem ele ao lado (tablet e tela cheia), este botão a abre. */
+.roleta__escolher {
+  display: none;
+  min-height: 48px;
+}
+
+.palco--apresentando .roleta__escolher {
+  display: inline-flex;
+}
+
+.roleta__escolher.botao--sortear {
+  width: 100%;
+  padding-inline: 16px;
+}
+
+.roleta__dica-toque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--raio-pilula);
+  background: var(--branco);
+  color: var(--marinho);
+  font-size: clamp(1.0625rem, 1.8vw, 1.5rem);
+  font-weight: 900;
+  text-align: center;
+}
+
+.roleta__dica-toque svg {
+  flex-shrink: 0;
+  width: 1.3em;
+  height: 1.3em;
+  color: var(--brilhante);
+}
+
+/* Lista para marcar quem está girando */
+
+.quem-gira {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quem-gira__pessoa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1px solid var(--medio-20);
+  border-radius: var(--raio);
+  background: var(--branco);
+  color: var(--preto);
+  font: inherit;
+  text-align: left;
+  transition: background-color var(--transicao), border-color var(--transicao);
+}
+
+button.quem-gira__pessoa:not(:disabled) {
+  cursor: pointer;
+}
+
+button.quem-gira__pessoa:hover:not(:disabled) {
+  background: var(--medio-10);
+}
+
+button.quem-gira__pessoa:disabled {
+  background: var(--medio-5);
+  color: var(--texto-suave);
+}
+
+.quem-gira__pessoa--marcada,
+button.quem-gira__pessoa--marcada:disabled {
+  border-color: var(--brilhante);
+  background: var(--brilhante-10);
+  color: var(--marinho);
+  font-weight: 700;
+}
+
+.quem-gira__nome {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.roleta .placa {
+  min-height: 200px;
+  padding: 24px 16px;
+}
+
+.roleta .placa__nome {
+  font-size: clamp(1.75rem, 3vw, 3rem);
+}
+
+.roleta .palco__numeros {
+  gap: 8px;
+  margin-top: 0;
+}
+
+.roleta .palco__numeros div {
+  justify-content: flex-end;
+  padding: 8px 12px;
+}
+
+.roleta .palco__numeros dt {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.roleta .palco__numeros dd {
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+}
+
+.placa__pessoa {
+  font-size: clamp(1.0625rem, 1.6vw, 1.5rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.placa--vez {
+  animation: revelar 400ms ease-out both;
+}
+
+.placa--resultado {
+  color: var(--branco);
+  animation: revelar 600ms ease-out both;
+}
+
+.placa--ganhou {
+  background: var(--marinho);
+  animation: revelar 600ms ease-out both, brilhar 1.8s ease-in-out 600ms 2;
+}
+
+.placa--gire_de_novo {
+  background: var(--medio);
+}
+
+.placa--nao_ganhou {
+  background: var(--vermelho);
+}
+
+.etiqueta--ganhou {
+  background: var(--marinho);
+  color: var(--branco);
+}
+
+.etiqueta--gire_de_novo {
+  background: var(--medio);
+  color: var(--branco);
+}
+
+.etiqueta--nao_ganhou {
+  background: var(--vermelho);
+  color: var(--branco);
+}
+
+.segmentos--pequeno .segmentos__opcao {
+  min-height: 32px;
+  padding: 4px 12px;
+  font-size: 0.875rem;
+}
+
+.roda {
+  position: relative;
+  width: min(88%, 64vh);
+  aspect-ratio: 1;
+  justify-self: center;
+  margin-right: 10%;
+}
+
+.roda::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+}
+
+/* Girando, o quadrado da roda passa do espaço dela: o recorte evita a barra de rolagem piscar. */
+.roda__recorte {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.roda__disco {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.roda__disco svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.roda__aro {
+  fill: var(--branco);
+}
+
+.roda__casa {
+  stroke: var(--branco);
+  stroke-width: 2;
+}
+
+.roda__texto {
+  fill: var(--branco);
+  font-family: var(--fonte);
+  font-size: 20px;
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.roda__pino {
+  fill: var(--marinho);
+}
+
+.roda__centro {
+  pointer-events: none;
+  position: absolute;
+  inset: 34%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--branco);
+  box-shadow: var(--sombra-janela);
+}
+
+.roda__centro img {
+  width: 74%;
+  height: auto;
+}
+
+/* Roda que responde ao toque */
+
+.roda--interativa {
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.roda--tocavel {
+  touch-action: none;
+}
+
+.roda--tocavel::after {
+  content: '';
+  position: absolute;
+  inset: -1%;
+  border: 4px solid var(--branco);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: chamar-toque 1.6s ease-out infinite;
+}
+
+/* A Roleta anima mesmo com "menos movimento" ligado no sistema (ver "Roleta" no CLAUDE.md). */
+.roda.roda--tocavel::after {
+  animation-duration: 1.6s !important;
+  animation-iteration-count: infinite !important;
+}
+
+@keyframes chamar-toque {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.07);
+  }
+}
+
+.roda__recorte,
+.roda__centro {
+  transition: transform 120ms ease-out;
+}
+
+.roda--pressionada .roda__recorte,
+.roda--pressionada .roda__centro {
+  transform: scale(0.98);
+}
+
+.roda__toque {
+  position: absolute;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: onda-do-toque 600ms ease-out both;
+}
+
+.roda .roda__toque {
+  animation-duration: 600ms !important;
+}
+
+@keyframes onda-do-toque {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+}
+
+.roda__seta {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  right: -10%;
+  width: 14%;
+  transform: translateY(-50%);
+}
+
+.roda__seta svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: right center;
+  overflow: visible;
+}
+
+.roda__seta path {
+  fill: var(--branco);
+  stroke: var(--marinho);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.palco--apresentando .roleta {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
+.palco--apresentando .roda {
+  width: min(88%, 74vh);
+}
+
+.palco--apresentando .roleta .placa {
+  min-height: 28vh;
+}
+
+.palco--apresentando .roleta .placa__nome {
+  font-size: clamp(2.5rem, 4.5vw, 5.5rem);
+}
+
 .lista-painel__troca {
   display: flex;
   flex-wrap: wrap;
@@ -1964,7 +2368,8 @@ body.apresentando {
 
 .abas--painel {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 0;
 }
 
@@ -2112,6 +2517,22 @@ body.apresentando {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .roda {
+    width: min(86%, 60vh);
+  }
+
+  .roleta__escolher {
+    display: inline-flex;
+  }
+}
+
+/* Tablet em pé: a roda ocupa a largura toda, para ficar fácil de tocar. */
+@media (max-width: 1024px) and (orientation: portrait) {
+  .roleta,
+  .palco--apresentando .roleta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .palco {
     min-height: 420px;
   }
@@ -2120,6 +2541,15 @@ body.apresentando {
 @media (max-width: 760px) {
   .palco {
     padding: 24px 16px;
+  }
+
+  .roleta {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .roleta .placa {
+    min-height: 160px;
   }
 
   .palco__numeros {
@@ -2157,6 +2587,10 @@ body.apresentando {
 
 .painel__grade > .bloco + .bloco {
   margin-top: 0;
+}
+
+.painel__roleta {
+  grid-column: 1 / -1;
 }
 
 .painel__sorteando {
